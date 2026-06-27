@@ -1,0 +1,230 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merwin David · Revenue Cycle Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E151D; --surface:#161F2A; --surface2:#1B2530; --ink:#E8EDF2; --soft:#93A3B1;
+    --line:#27323F; --line2:#34414F;
+    --teal:#3AC9BC; --teal-bg:rgba(58,201,188,.13);
+    --clay:#E2975B; --clay-bg:rgba(226,151,91,.15);
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(1100px 560px at 50% -10%, rgba(58,201,188,.11), transparent 72%),
+      linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+    background-size:auto, 32px 32px, 32px 32px;
+    background-attachment:fixed;
+    color:var(--ink); font-family:var(--body);
+    -webkit-font-smoothing:antialiased; line-height:1.55}
+  a{color:inherit; text-decoration:none}
+  .wrap{max-width:980px; margin:0 auto; padding:0 22px}
+
+  /* Nav */
+  nav{position:sticky; top:0; z-index:10; background:rgba(14,21,29,.82);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+  .nav-in{max-width:980px; margin:0 auto; padding:15px 22px; display:flex;
+    align-items:center; justify-content:space-between}
+  .brand{font-family:var(--mono); font-size:13px; font-weight:600; letter-spacing:.04em}
+  .brand b{color:var(--teal)}
+  .nav-links{display:flex; gap:22px; font-size:14px; font-weight:500}
+  .nav-links a{color:var(--soft)} .nav-links a:hover{color:var(--ink)}
+  @media(max-width:600px){.nav-links{display:none}}
+
+  /* Hero */
+  .hero{padding:78px 0 60px}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--teal); font-weight:600; margin-bottom:20px}
+  h1{font-family:var(--display); font-size:clamp(33px,5.6vw,56px); font-weight:700;
+    letter-spacing:-.03em; line-height:1.04; max-width:16ch}
+  .lede{font-size:18px; color:var(--soft); margin-top:22px; max-width:60ch}
+  .lede strong{color:var(--ink); font-weight:600}
+  .cta{display:flex; gap:12px; margin-top:30px; flex-wrap:wrap}
+  .btn{font-family:var(--body); font-weight:600; font-size:14.5px; padding:12px 20px;
+    border-radius:10px; cursor:pointer; border:1px solid transparent; transition:.15s}
+  .btn-primary{background:var(--teal); color:#07221E}
+  .btn-primary:hover{background:#54d6c9}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line2)}
+  .btn-ghost:hover{border-color:var(--teal); color:var(--teal)}
+
+  /* RCM readout strip */
+  .ticker{display:flex; gap:24px; flex-wrap:wrap; margin-top:36px; padding-top:20px;
+    border-top:1px solid var(--line); font-family:var(--mono); font-size:12.5px; color:var(--soft)}
+  .ticker span{display:inline-flex; gap:8px; align-items:baseline}
+  .ticker .tk{letter-spacing:.08em; text-transform:uppercase; font-size:10.5px; opacity:.75}
+  .ticker b{color:var(--teal); font-weight:600; font-size:14px}
+
+  /* Section scaffolding */
+  section{padding:30px 0}
+  .sec-label{font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--clay); font-weight:600; margin-bottom:20px}
+  .sec-h{font-family:var(--display); font-size:27px; font-weight:600; letter-spacing:-.02em; margin-bottom:8px}
+
+  /* Approach pillars */
+  .pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:8px}
+  .pillar{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px}
+  .pillar .pn{font-family:var(--mono); font-size:12px; color:var(--teal); font-weight:600}
+  .pillar h3{font-family:var(--display); font-size:17px; font-weight:600; margin:10px 0 6px}
+  .pillar p{font-size:14px; color:var(--soft); line-height:1.55}
+  @media(max-width:680px){.pillars{grid-template-columns:1fr}}
+
+  /* Featured case */
+  .case{background:#15222D; border:1px solid var(--line2); border-radius:18px; padding:34px 32px; margin-top:8px;
+    box-shadow:0 0 0 1px rgba(58,201,188,.06), 0 24px 60px -30px rgba(58,201,188,.35)}
+  .case .sec-label{color:var(--teal)}
+  .case h3{font-family:var(--display); font-size:22px; font-weight:600; color:#fff; max-width:24ch; line-height:1.2}
+  .case p{font-size:15px; color:#AEBBC6; margin-top:14px; max-width:64ch; line-height:1.62}
+  .case .tag{display:inline-block; margin-top:18px; font-family:var(--mono); font-size:12px;
+    color:var(--teal); border:1px solid var(--line2); border-radius:999px; padding:6px 13px}
+
+  /* Work grid */
+  .work{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:24px; display:flex; flex-direction:column; transition:.18s; position:relative}
+  .card:hover{border-color:var(--teal); transform:translateY(-2px)}
+  .card .ct{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--soft); font-weight:600; margin-bottom:12px}
+  .card h3{font-family:var(--display); font-size:20px; font-weight:600; margin-bottom:7px}
+  .card p{font-size:14.5px; color:var(--soft); line-height:1.55; flex:1}
+  .card .go{margin-top:16px; font-size:14px; font-weight:600; color:var(--teal)}
+  .card.soon{background:rgba(255,255,255,.03)}
+  .badge-soon{position:absolute; top:18px; right:18px; font-family:var(--mono); font-size:10px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--clay); background:var(--clay-bg);
+    padding:4px 9px; border-radius:999px; font-weight:600}
+  @media(max-width:680px){.work{grid-template-columns:1fr}}
+
+  /* Stats */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:8px}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px 18px}
+  .stat .sn{font-family:var(--display); font-size:30px; font-weight:700; color:var(--teal); letter-spacing:-.02em}
+  .stat .sl{font-size:13px; color:var(--soft); margin-top:6px}
+  @media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}
+
+  /* Contact */
+  footer{border-top:1px solid var(--line); margin-top:40px; padding:46px 0 60px}
+  .foot-h{font-family:var(--display); font-size:26px; font-weight:600; letter-spacing:-.02em}
+  .foot-p{font-size:15px; color:var(--soft); margin-top:10px; max-width:52ch}
+  .foot-links{display:flex; gap:14px; margin-top:22px; flex-wrap:wrap}
+  .foot-note{margin-top:30px; font-size:12px; color:var(--soft); font-family:var(--mono)}
+
+  :focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+</style>
+
+<nav>
+  <div class="nav-in">
+    <span class="brand"><b>MD</b> · Revenue Cycle Operations</span>
+    <div class="nav-links">
+      <a href="#approach">Approach</a>
+      <a href="#work">Work</a>
+      <a href="kpi-playbook.html">KPI Playbook</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Merwin David · CRCR, CSMC</p>
+    <h1>Earned revenue should not leak out of the cycle.</h1>
+    <p class="lede">Director level revenue cycle operations leader with 13+ years across <strong>primary care, labs, behavioral health, and multispecialty</strong>. I build the systems and decision tools that stop denials at the source instead of chasing them after the money is gone.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="kpi-playbook.html">See the KPI playbook</a>
+      <a class="btn btn-ghost" href="#work">Explore the tools</a>
+    </div>
+    <div class="ticker" aria-hidden="true">
+      <span><i class="tk">Net Collection</i> <b>94.2%</b></span>
+      <span><i class="tk">Days in AR</i> <b>31</b></span>
+      <span><i class="tk">Clean Claim</i> <b>97.1%</b></span>
+      <span><i class="tk">Denial Rate</i> <b>4.8%</b></span>
+      <span><i class="tk">Appeal Overturn</i> <b>79%</b></span>
+    </div>
+  </header>
+
+  <section id="approach">
+    <p class="sec-label">How I work</p>
+    <div class="pillars">
+      <div class="pillar"><span class="pn">01</span>
+        <h3>Operate on the numbers</h3>
+        <p>KPIs are a to-do list, not a report. Every metric I track has a defined action behind it when it moves.</p></div>
+      <div class="pillar"><span class="pn">02</span>
+        <h3>Build the systems</h3>
+        <p>Payer specific coverage logic, authorization tracking, denial triage. I turn manual judgment into tooling.</p></div>
+      <div class="pillar"><span class="pn">03</span>
+        <h3>Prevent the loss</h3>
+        <p>I fix root causes upstream so the same denial does not happen twice, then feed the fix back into the workflow.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="case">
+      <p class="sec-label">Featured work</p>
+      <h3>A coverage tool that catches denials before the claim goes out</h3>
+      <p>Most coding tools check claims against Medicare national and local coverage rules alone, but a real book of business is mostly commercial, and every commercial payer publishes its own medical policy. I closed that gap by ingesting each payer's policies into a database of covered and non-covered procedure and diagnosis codes, then wiring it into a tool that gives the physician a real time coverage read at the point of order. Coverage decisions moved upstream to the moment of care, so the team stopped generating denials it could never win.</p>
+      <span class="tag">Root cause diagnosis · Data systems · Point of care decision support</span>
+    </div>
+  </section>
+
+  <section id="work">
+    <p class="sec-label">Tools and writing</p>
+    <h2 class="sec-h">Things I have built</h2>
+    <div class="work">
+      <a class="card" href="kpi-playbook.html">
+        <span class="ct">Operating Playbook</span>
+        <h3>KPI Playbook</h3>
+        <p>Twelve metrics I run a revenue cycle on, each with the math, a worked example, the benchmark, and the action it triggers.</p>
+        <span class="go">Read the playbook →</span>
+      </a>
+      <a class="card" href="appeals.html">
+        <span class="ct">Interactive Tool</span>
+        <h3>Denial &amp; Appeals Triage</h3>
+        <p>A working model for sorting denials by type and driving appeals to resolution before the filing window closes.</p>
+        <span class="go">Open the tool →</span>
+      </a>
+      <a class="card" href="authorization-tracker.html">
+        <span class="ct">Interactive Tool</span>
+        <h3>Authorization Tracker</h3>
+        <p>A prevention first tool that surfaces authorizations before they expire or run out of units, so reauths happen on time.</p>
+        <span class="go">Open the tool →</span>
+      </a>
+      <div class="card soon">
+        <span class="badge-soon">In progress</span>
+        <span class="ct">Coming soon</span>
+        <h3>More prototypes</h3>
+        <p>Payment plan calculator, payer frequency limits lookup, and a coding suggestion demo are on the way.</p>
+        <span class="go" style="color:var(--soft)">Building now</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="sec-label">Track record</p>
+    <div class="stats">
+      <div class="stat"><div class="sn">13+</div><div class="sl">Years in healthcare revenue cycle</div></div>
+      <div class="stat"><div class="sn">100+</div><div class="sl">Team members led</div></div>
+      <div class="stat"><div class="sn">180%</div><div class="sl">Peak organizational growth</div></div>
+      <div class="stat"><div class="sn">125%</div><div class="sl">Revenue increase delivered</div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <h2 class="foot-h">Let's talk revenue cycle.</h2>
+    <p class="foot-p">Open to operations leadership and consulting conversations across the full revenue cycle.</p>
+    <div class="foot-links">
+      <a class="btn btn-primary" href="mailto:your.email@example.com">Email me</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/your-profile">LinkedIn</a>
+    </div>
+    <p class="foot-note">Merwin David · Revenue Cycle Operations · CRCR, CSMC</p>
+  </div>
+</footer>
