@@ -1,0 +1,489 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E151D; --surface:#161F2A; --surface2:#1B2530; --ink:#E8EDF2; --soft:#93A3B1;
+    --line:#27323F; --line2:#34414F;
+    --teal:#3AC9BC; --teal-bg:rgba(58,201,188,.13);
+    --clay:#E2975B; --clay-bg:rgba(226,151,91,.15);
+    --red:#F2837A;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(1000px 520px at 50% -8%, rgba(58,201,188,.10), transparent 72%),
+      linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+    background-size:auto, 32px 32px, 32px 32px;
+    background-attachment:fixed;
+    color:var(--ink); font-family:var(--body);
+    -webkit-font-smoothing:antialiased; line-height:1.55;
+  }
+  .kpi-scope{ padding:54px 20px 80px; }
+  .kpi-wrap{max-width:760px; margin:0 auto}
+
+  .kpi-eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--teal); font-weight:600; margin-bottom:14px}
+  .kpi-title{font-family:var(--display); font-size:clamp(30px,5vw,46px);
+    font-weight:700; letter-spacing:-.025em; line-height:1.05}
+  .kpi-thesis{font-size:17px; color:var(--soft); margin-top:18px; max-width:60ch}
+  .kpi-thesis strong{color:var(--ink); font-weight:600}
+  .kpi-rule{height:2px; width:64px; background:var(--clay); margin:30px 0 8px}
+
+  .kpi-card{background:var(--surface); border:1px solid var(--line);
+    border-radius:18px; padding:26px 26px 24px; margin-top:20px;
+    opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease}
+  .kpi-card.in{opacity:1; transform:none}
+  .kpi-head{display:flex; gap:16px; align-items:baseline}
+  .kpi-tag{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--teal);
+    background:var(--teal-bg); padding:5px 9px; border-radius:7px; white-space:nowrap; letter-spacing:.05em}
+  .kpi-name{font-family:var(--display); font-size:21px; font-weight:600; letter-spacing:-.01em}
+  .kpi-def{font-size:14px; color:var(--soft); margin-top:5px}
+
+  .kpi-formula{font-family:var(--mono); font-size:13.5px; color:var(--ink);
+    background:var(--surface2); border:1px solid var(--line); border-radius:11px;
+    padding:14px 16px; margin-top:18px; line-height:1.9}
+  .kpi-formula b{color:var(--teal); font-weight:600}
+
+  /* Calculator */
+  .kpi-calc{font-family:var(--mono); font-size:13px; margin-top:16px;
+    border-left:3px solid var(--teal); padding-left:16px}
+  .kpi-calc .tlabel{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--soft); margin-bottom:11px; font-weight:600; display:flex; align-items:center; gap:8px}
+  .tlabel .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); display:inline-block;
+    box-shadow:0 0 0 0 rgba(58,201,188,.5); animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(58,201,188,.45)}70%{box-shadow:0 0 0 7px rgba(58,201,188,0)}100%{box-shadow:0 0 0 0 rgba(58,201,188,0)}}
+  .calc-row{display:flex; justify-content:space-between; align-items:center; padding:4px 0; color:#AEBBC6; gap:12px}
+  .calc-row > span{flex:1}
+  .cin{width:140px; font-family:var(--mono); font-size:13px; font-weight:500; color:var(--ink);
+    background:var(--surface2); border:1px solid var(--line2); border-radius:7px;
+    padding:6px 10px; text-align:right; outline:none; -moz-appearance:textfield}
+  .cin:focus{border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg)}
+  .cin::-webkit-outer-spin-button,.cin::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+  .crow-comp{display:flex; justify-content:space-between; padding:3px 0; color:#7E8C99}
+  .crow-comp span:last-child{font-variant-numeric:tabular-nums; color:#B7C3CE}
+  .tdiv{height:1px; background:var(--line2); margin:8px 0}
+  .calc-result{display:flex; justify-content:space-between; padding-top:5px; font-weight:600; font-size:14.5px}
+  .calc-result > span:first-child{color:var(--ink)}
+  .calc-result span:last-child{color:var(--clay); font-variant-numeric:tabular-nums}
+
+  .kpi-bench{display:flex; align-items:center; gap:11px; margin-top:18px; flex-wrap:wrap}
+  .bpill{font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.05em;
+    text-transform:uppercase; padding:4px 10px; border-radius:999px; white-space:nowrap}
+  .bpill.ok{background:var(--teal-bg); color:var(--teal)}
+  .bpill.watch{background:var(--clay-bg); color:var(--clay)}
+  .bpill.off{background:rgba(242,131,122,.15); color:var(--red)}
+  .btext{font-size:13px; color:var(--soft)}
+
+  .kpi-move{margin-top:20px; background:rgba(255,255,255,.03); border:1px solid var(--line);
+    border-radius:12px; padding:16px 18px}
+  .move-label{display:inline-block; font-family:var(--mono); font-size:10.5px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--clay); font-weight:600; margin-bottom:8px}
+  .kpi-move p{font-size:14.5px; color:#C9D3DC; line-height:1.62}
+
+  .kpi-foot{margin-top:34px; font-size:13px; color:var(--soft); text-align:center; line-height:1.7}
+
+  @media(max-width:560px){
+    .kpi-scope{padding:40px 14px 60px}
+    .kpi-card{padding:20px 18px}
+    .kpi-head{flex-direction:column; gap:10px}
+    .cin{width:120px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .kpi-card{opacity:1; transform:none; transition:none}
+    .tlabel .dot{animation:none}
+  }
+</style>
+
+<section class="kpi-scope">
+ <div class="kpi-wrap">
+  <p class="kpi-eyebrow">Revenue Cycle · Operating Playbook</p>
+  <h1 class="kpi-title">KPIs aren't a report.<br>They're a to-do list.</h1>
+  <p class="kpi-thesis">Anyone can recite a formula. What separates an operator is knowing what to do when the number moves. These are the metrics I run a revenue cycle on, and they hold up across primary care, labs, behavioral health, and multispecialty groups. <strong>Edit any number below and the math updates live</strong>, including the status pill, so you can stress test your own book.</p>
+  <div class="kpi-rule"></div>
+
+  <!-- K01 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K01</span>
+      <div><h3 class="kpi-name">Gross &amp; Net Collection Rate</h3>
+      <p class="kpi-def">What you actually collected against what was billed (GCR), and against what was collectible (NCR).</p></div></div>
+    <div class="kpi-formula"><b>GCR</b> = Payments ÷ Total Charges<br><b>NCR</b> = Payments ÷ (Charges − Contractual Adjustments)</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Total charges</span><input class="cin" id="k01_charges" type="number" inputmode="decimal" value="4000000"></div>
+      <div class="calc-row"><span>Contractual adjustments</span><input class="cin" id="k01_contr" type="number" inputmode="decimal" value="2650000"></div>
+      <div class="calc-row"><span>Payments</span><input class="cin" id="k01_pay" type="number" inputmode="decimal" value="1200000"></div>
+      <div class="crow-comp"><span>Allowable</span><span id="k01_allow"></span></div>
+      <div class="crow-comp"><span>GCR (vs. charges)</span><span id="k01_gcr"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>NCR (vs. allowable)</span><span id="k01_ncr"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k01_pill"></span>
+      <span class="btext">NCR target is 90 to 95 percent, with elite performers above 95. GCR isn't a performance metric.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>GCR mostly reflects how inflated the charge master is, so I don't manage to it. NCR is the number that tells the truth. The points sitting under 100 percent aren't random, so I break that gap into denials, underpayments, and write offs, give each one an owner and a target, and work it down. When NCR gets stuck around 89, there are almost always underpayments that nobody is flagging.</p></div>
+  </article>
+
+  <!-- K02 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K02</span>
+      <div><h3 class="kpi-name">Clean Claim Rate</h3>
+      <p class="kpi-def">The share of claims accepted on submission with no rejection or edit.</p></div></div>
+    <div class="kpi-formula"><b>CCR</b> = Claims accepted without rejection ÷ Total claims submitted</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Claims submitted</span><input class="cin" id="k02_sub" type="number" inputmode="decimal" value="10000"></div>
+      <div class="calc-row"><span>Accepted, no edit</span><input class="cin" id="k02_acc" type="number" inputmode="decimal" value="9400"></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Clean Claim Rate</span><span id="k02_ccr"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k02_pill"></span>
+      <span class="btext">Target is 95 to 99 percent. Below 95 means the scrubber is letting dirty claims through.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Every point under 95 is rework I'm paying for twice. I trace the rejections back to the few edit failures that cause most of them, and those shift by specialty. Eligibility shows up everywhere, modifiers and bundling drive it in surgery and multispecialty, medical necessity and LCD mismatches dominate in labs, and provider taxonomy trips up behavioral health. I tune the scrubber to the actual mix so the claim never goes out dirty in the first place. Fixing a claim at this stage costs a fraction of what it costs to fix the same claim later as a denial.</p></div>
+  </article>
+
+  <!-- K03 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K03</span>
+      <div><h3 class="kpi-name">First Pass Resolution Rate and Staffing</h3>
+      <p class="kpi-def">Claims paid in full on first submission, and the headcount the rest quietly costs.</p></div></div>
+    <div class="kpi-formula"><b>FPRR</b> = Claims paid in full on first submission ÷ Total claims submitted</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Quality becomes headcount</div>
+      <div class="calc-row"><span>Claims per month</span><input class="cin" id="k03_claims" type="number" inputmode="decimal" value="10000"></div>
+      <div class="calc-row"><span>First pass rate (%)</span><input class="cin" id="k03_fprr" type="number" inputmode="decimal" value="80"></div>
+      <div class="calc-row"><span>Rework capacity per FTE-month</span><input class="cin" id="k03_cap" type="number" inputmode="decimal" value="630"></div>
+      <div class="calc-row"><span>Target FPRR (%)</span><input class="cin" id="k03_target" type="number" inputmode="decimal" value="90"></div>
+      <div class="crow-comp"><span>Claims needing rework now</span><span id="k03_rework"></span></div>
+      <div class="crow-comp"><span>FTEs on rework now</span><span id="k03_ftenow"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Lifting to target frees</span><span id="k03_freed"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k03_pill"></span>
+      <span class="btext">Target is 85 percent or higher. Below 85 points to an upstream problem, not a follow up one.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>This is the metric that turns claim quality into a number leadership actually feels. I model an FPRR improvement as FTE savings. On a 10,000 claim book, every ten points is roughly one and a half analysts pulled off rework and put back on appeals that recover real money. That's how I make the case for scrubbing and automation. Not "cleaner claims," but two people back.</p></div>
+  </article>
+
+  <!-- K04 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K04</span>
+      <div><h3 class="kpi-name">Days in AR</h3>
+      <p class="kpi-def">How long, on average, a dollar sits unpaid.</p></div></div>
+    <div class="kpi-formula"><b>Days in AR</b> = Total AR ÷ (Total charges ÷ days in period)</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Total AR</span><input class="cin" id="k04_ar" type="number" inputmode="decimal" value="500000"></div>
+      <div class="calc-row"><span>Annual charges</span><input class="cin" id="k04_annual" type="number" inputmode="decimal" value="6000000"></div>
+      <div class="crow-comp"><span>Avg daily charges</span><span id="k04_daily"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Days in AR</span><span id="k04_days"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k04_pill"></span>
+      <span class="btext">High performers stay under 30 to 35 days. Anything over 50 is a red flag.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Days in AR is a lagging symptom, so I don't chase it in the aged buckets. By then the claim is already old. I work it upstream at submission lag, clean claim rate, and authorization, and AR comes down on its own. If AR is climbing while clean claim rate looks healthy, the problem isn't the claims. It's how we're following up with payers, and I retune the worklist.</p></div>
+  </article>
+
+  <!-- K05 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K05</span>
+      <div><h3 class="kpi-name">AR Aging, 60+ and 90+</h3>
+      <p class="kpi-def">The share of receivables drifting toward the timely filing cliff.</p></div></div>
+    <div class="kpi-formula"><b>Aging %</b> = AR in the bucket (60+ or 90+ days) ÷ Total AR</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Total AR</span><input class="cin" id="k05_total" type="number" inputmode="decimal" value="500000"></div>
+      <div class="calc-row"><span>AR 60+ days</span><input class="cin" id="k05_60" type="number" inputmode="decimal" value="60000"></div>
+      <div class="calc-row"><span>AR 90+ days</span><input class="cin" id="k05_90" type="number" inputmode="decimal" value="40000"></div>
+      <div class="crow-comp"><span>60+ share</span><span id="k05_60p"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>90+ share</span><span id="k05_90p"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k05_pill"></span>
+      <span class="btext">Keep 90+ under 10 percent of total AR. Past 90 days, claims start to die.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>The 90+ bucket is where revenue quietly turns into a write off as filing windows close. I run a worklist scored by days to deadline and dollar value, so the team always works the claims closest to expiring before the easy ones. Nothing collectible should ever age out by accident.</p></div>
+  </article>
+
+  <!-- K06 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K06</span>
+      <div><h3 class="kpi-name">Patient Aging</h3>
+      <p class="kpi-def">Patient responsibility balances, tracked on their own and kept out of the payer numbers.</p></div></div>
+    <div class="kpi-formula"><b>Patient Aging</b> = Patient responsibility AR by age bucket ÷ Total patient AR</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Total patient AR</span><input class="cin" id="k06_total" type="number" inputmode="decimal" value="120000"></div>
+      <div class="calc-row"><span>Patient AR 90+ days</span><input class="cin" id="k06_90" type="number" inputmode="decimal" value="48000"></div>
+      <div class="crow-comp"><span>0 to 90 days</span><span id="k06_0"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>90+ days</span><span id="k06_90p"></span></div></div>
+    <div class="kpi-bench"><span class="bpill watch">Watch</span>
+      <span class="btext">Rising across the industry as deductibles climb, and it needs its own playbook.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Patient AR behaves nothing like payer AR, so it gets its own approach. Collect at the point of service, set up FDCPA compliant payment plans, and offer financial counseling before anything escalates. As deductibles keep climbing, the practices that let patient aging hide inside the payer numbers watch their bad debt grow without noticing. I break it out so they can see it.</p></div>
+  </article>
+
+  <!-- K07 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K07</span>
+      <div><h3 class="kpi-name">Payment Velocity</h3>
+      <p class="kpi-def">Days from clean claim submission to first payment, read one payer at a time.</p></div></div>
+    <div class="kpi-formula"><b>Velocity</b> = Avg days from clean claim submission to first payment, per payer</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try one payer</div>
+      <div class="calc-row"><span>Actual days to first payment</span><input class="cin" id="k07_actual" type="number" inputmode="decimal" value="34"></div>
+      <div class="calc-row"><span>Contracted term (days)</span><input class="cin" id="k07_term" type="number" inputmode="decimal" value="14"></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Days over contract term</span><span id="k07_gap"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k07_pill"></span>
+      <span class="btext">Payer dependent. The spread between payers tells you more than the average does.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Velocity is really a payer behavior metric, so I never look at it blended. A payer paying in 34 days against a 14 day contract term is a follow up escalation and a contract conversation, and it goes straight onto the payer scorecard. A blended average is dangerous, because it hides the one payer that's choking the client's cash flow.</p></div>
+  </article>
+
+  <!-- K08 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K08</span>
+      <div><h3 class="kpi-name">Submission and Posting Lag</h3>
+      <p class="kpi-def">The part of the cycle that lives entirely inside your own walls.</p></div></div>
+    <div class="kpi-formula"><b>Charge lag</b> = Date of service to claim submission<br><b>Posting lag</b> = Remit received to payment posted</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Charge lag (days)</span><input class="cin" id="k08_charge" type="number" inputmode="decimal" step="0.1" value="4.2"></div>
+      <div class="calc-row"><span>Posting lag (days)</span><input class="cin" id="k08_post" type="number" inputmode="decimal" step="0.1" value="1.8"></div>
+      <div class="calc-row"><span>Avg daily charges</span><input class="cin" id="k08_daily" type="number" inputmode="decimal" value="16438"></div>
+      <div class="crow-comp"><span>Combined internal lag</span><span id="k08_total"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Cash held back by charge lag</span><span id="k08_tied"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k08_pill"></span>
+      <span class="btext">Aim for charge lag under 2 to 3 days, and posting close to same day.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>This is the slice of AR I control completely, with no payer in the way. Every day of charge lag is a day added to AR before the payer has even seen the claim. I keep charge lag under two or three days and posting close to same day, so both the AR clock and the cash picture stay honest. It isn't glamorous, and it's free money.</p></div>
+  </article>
+
+  <!-- K09 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K09</span>
+      <div><h3 class="kpi-name">Average Payment per Claim and per CPT</h3>
+      <p class="kpi-def">The underpayment radar. Actual reimbursement against the contracted rate.</p></div></div>
+    <div class="kpi-formula"><b>Avg per claim</b> = Total payments ÷ claim count<br><b>Avg per CPT</b> = Payments for a code ÷ units of that code</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try one code, e.g. 99214</div>
+      <div class="calc-row"><span>Actual avg per unit</span><input class="cin" id="k09_actual" type="number" inputmode="decimal" value="112"></div>
+      <div class="calc-row"><span>Contracted rate</span><input class="cin" id="k09_contract" type="number" inputmode="decimal" value="127"></div>
+      <div class="calc-row"><span>Units per quarter</span><input class="cin" id="k09_units" type="number" inputmode="decimal" value="1700"></div>
+      <div class="crow-comp"><span>Shortfall per unit</span><span id="k09_sf"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Silent underpayment per quarter</span><span id="k09_total"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k09_pill"></span>
+      <span class="btext">Compare actual to contracted by payer and CPT. Any variance is money you can recover.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>This is how I catch underpayments. I line up the actual average reimbursement per CPT against the contracted rate by payer, and the gap is silent money. A $15 shortfall on a high volume office visit, or a few cents on a high volume lab test, adds up to tens of thousands a quarter, and because it never shows up as a denial, nobody fights it unless someone is watching this number. I make sure someone is.</p></div>
+  </article>
+
+  <!-- K10 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K10</span>
+      <div><h3 class="kpi-name">Denial Rate and Appeal Overturn Rate</h3>
+      <p class="kpi-def">The metric pair that decides how much earned revenue you actually keep, in any specialty.</p></div></div>
+    <div class="kpi-formula"><b>Denial rate</b> = Denied ÷ Submitted<br><b>Overturn</b> = Appeals won ÷ Appeals filed<br><b>Appeal rate</b> = Appeals filed ÷ Appealable denials</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Claims submitted</span><input class="cin" id="k10_sub" type="number" inputmode="decimal" value="10000"></div>
+      <div class="calc-row"><span>Denied</span><input class="cin" id="k10_denied" type="number" inputmode="decimal" value="1500"></div>
+      <div class="calc-row"><span>Appealed</span><input class="cin" id="k10_appealed" type="number" inputmode="decimal" value="750"></div>
+      <div class="calc-row"><span>Appeals won</span><input class="cin" id="k10_won" type="number" inputmode="decimal" value="615"></div>
+      <div class="calc-row"><span>Avg $ per claim</span><input class="cin" id="k10_avg" type="number" inputmode="decimal" value="130"></div>
+      <div class="crow-comp"><span>Denial rate</span><span id="k10_drate"></span></div>
+      <div class="crow-comp"><span>Appeal rate</span><span id="k10_arate"></span></div>
+      <div class="crow-comp"><span>Overturn rate</span><span id="k10_overturn"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Winnable revenue left on the floor</span><span id="k10_abandoned"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k10_pill"></span>
+      <span class="btext">Denial rates vary by specialty, from about 5 to 10 percent in primary care up to 15 to 20 percent in behavioral health and parts of lab. Target under 5.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>A high overturn rate sitting next to a low appeal rate is the worst combination there is. It means we win when we fight, but we only fight half the time. I triage every denial into front end, medical necessity, or payer behavior, appeal the medical necessity ones with the clinical documentation and payer policy to back them, and push the front end ones back upstream so they stop happening. The number I watch hardest isn't the denial rate. It's how many winnable denials we're walking away from.</p></div>
+  </article>
+
+  <!-- K11 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K11</span>
+      <div><h3 class="kpi-name">AR Touches per Claim</h3>
+      <p class="kpi-def">How many times a person has to touch an account before it finally resolves.</p></div></div>
+    <div class="kpi-formula"><b>Touches per Claim</b> = Total AR work actions logged ÷ Claims resolved</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Touches become labor</div>
+      <div class="calc-row"><span>Claims resolved per month</span><input class="cin" id="k11_resolved" type="number" inputmode="decimal" value="6000"></div>
+      <div class="calc-row"><span>Total touches logged</span><input class="cin" id="k11_touches" type="number" inputmode="decimal" value="15000"></div>
+      <div class="calc-row"><span>Best in class touches/claim</span><input class="cin" id="k11_bic" type="number" inputmode="decimal" step="0.1" value="1.2"></div>
+      <div class="calc-row"><span>Minutes per touch</span><input class="cin" id="k11_min" type="number" inputmode="decimal" step="0.5" value="3"></div>
+      <div class="crow-comp"><span>Touches per resolved claim</span><span id="k11_tpc"></span></div>
+      <div class="crow-comp"><span>Excess touches per month</span><span id="k11_excess"></span></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Avoidable work</span><span id="k11_fte"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k11_pill"></span>
+      <span class="btext">Best in class resolves most claims in one or two touches. Above two is rework hiding in plain sight.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Touches are labor, and labor is the cost line I can actually move. When the same claim gets picked up three or four times before it resolves, that's usually missing information, a denial that should have been prevented, or a follow up that left no clear next step. I go after the highest touch reason codes first, because pulling touches per claim from 2.5 down to 1.5 on a 6,000 claim book hands me back a couple of analysts without losing a dollar of collections. It's the cleanest way I know to add capacity without adding headcount.</p></div>
+  </article>
+
+  <!-- K12 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">K12</span>
+      <div><h3 class="kpi-name">Collector Productivity</h3>
+      <p class="kpi-def">How much an analyst clears in a day, and whether capacity matches the queue.</p></div></div>
+    <div class="kpi-formula"><b>Productivity</b> = Accounts resolved ÷ AR analysts (FTE) ÷ working days</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Accounts resolved per month</span><input class="cin" id="k12_resolved" type="number" inputmode="decimal" value="6000"></div>
+      <div class="calc-row"><span>AR analysts (FTE)</span><input class="cin" id="k12_fte" type="number" inputmode="decimal" value="8"></div>
+      <div class="calc-row"><span>Working days</span><input class="cin" id="k12_days" type="number" inputmode="decimal" value="21"></div>
+      <div class="calc-row"><span>Team benchmark per FTE/day</span><input class="cin" id="k12_bench" type="number" inputmode="decimal" value="47"></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Resolved per FTE per day</span><span id="k12_perday"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="k12_pill"></span>
+      <span class="btext">Below the team benchmark usually means rework, not slow people. Read it next to touches per claim.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>I'm careful with this one, because productivity numbers get weaponized fast. A low figure rarely means the team is slow. More often they're reworking the same accounts, which is what K11 exposes, or fighting a payer that keeps denying. So I read productivity next to touches per claim and first pass rate, never on its own. When I do lift it, I do it by clearing the friction out of the work, not by pushing people to dial faster.</p></div>
+  </article>
+
+  <!-- B13 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">B13</span>
+      <div><h3 class="kpi-name">Cost to Collect</h3>
+      <p class="kpi-def">The efficiency check that keeps "collect more" honest.</p></div></div>
+    <div class="kpi-formula"><b>Cost to Collect</b> = Total collection department cost ÷ Total payments collected</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Department cost per year</span><input class="cin" id="b13_cost" type="number" inputmode="decimal" value="360000"></div>
+      <div class="calc-row"><span>Collected per year</span><input class="cin" id="b13_collected" type="number" inputmode="decimal" value="12000000"></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Cost to collect</span><span id="b13_ctc"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="b13_pill"></span>
+      <span class="btext">Lower is better. Reworking a single appealed claim alone can run $60 or more.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Cost to collect keeps me honest. I can always lift collections by throwing more bodies at the problem, but that isn't running things well. I bring this down by automating the predictable work, so the cost line drops while collections hold or grow. It's the metric that proves an improvement came from real efficiency and not just more effort.</p></div>
+  </article>
+
+  <!-- B14 -->
+  <article class="kpi-card">
+    <div class="kpi-head"><span class="kpi-tag">B14</span>
+      <div><h3 class="kpi-name">Underpayment and Net Recovery Rate</h3>
+      <p class="kpi-def">How much of the money you're owed you actually get back.</p></div></div>
+    <div class="kpi-formula"><b>Net Recovery</b> = Underpayments recovered ÷ Underpayments identified</div>
+    <div class="kpi-calc"><div class="tlabel"><span class="dot"></span>Try your own numbers</div>
+      <div class="calc-row"><span>Underpayments identified</span><input class="cin" id="b14_identified" type="number" inputmode="decimal" value="180000"></div>
+      <div class="calc-row"><span>Underpayments recovered</span><input class="cin" id="b14_recovered" type="number" inputmode="decimal" value="126000"></div>
+      <div class="tdiv"></div>
+      <div class="calc-result"><span>Net recovery rate</span><span id="b14_nrr"></span></div></div>
+    <div class="kpi-bench"><span class="bpill" id="b14_pill"></span>
+      <span class="btext">The bigger leak is usually in finding the underpayments, not collecting them.</span></div>
+    <div class="kpi-move"><span class="move-label">How I'd handle it</span>
+      <p>Most teams measure how much of an underpayment they recover once they've found it, and stop there. The real leak is everything they never found, which is exactly why K09 feeds straight into this. Find the per CPT variance first, then go get it. You can't recover money you never knew was short.</p></div>
+  </article>
+
+  <p class="kpi-foot">Default figures are illustrative worked examples, not client data.<br>Benchmarks reflect current US healthcare revenue cycle ranges.</p>
+ </div>
+</section>
+
+<script>
+(function(){
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+  function num(id){var el=document.getElementById(id); if(!el)return 0; var v=parseFloat(el.value); if(isNaN(v))return 0; return Math.max(v,0);}
+  function money(n){if(!isFinite(n))n=0; return '$'+Math.round(Math.max(n,0)).toLocaleString('en-US');}
+  function pct(n,d){var v=d>0?(n/d*100):0; return clamp(v,0,100).toFixed(1)+'%';}
+  function set(id,v){var el=document.getElementById(id); if(el)el.textContent=v;}
+  function pill(id,cls,label){var el=document.getElementById(id); if(el){el.className='bpill '+cls; el.textContent=label;}}
+  function band(v,okHi,watchHi,higherBetter){
+    // for "higher is better" pass higherBetter=true and thresholds as ok-floor / watch-floor
+    if(higherBetter){ if(v>=okHi)return['ok','On target']; if(v>=watchHi)return['watch','Watch']; return['off','Off target']; }
+    if(v<=okHi)return['ok','On target']; if(v<=watchHi)return['watch','Watch']; return['off','Off target'];
+  }
+
+  function update(){
+    // K01
+    var ch=num('k01_charges'), co=num('k01_contr'), pay=num('k01_pay'), allow=ch-co;
+    set('k01_allow',money(allow)); set('k01_gcr',pct(pay,ch)); set('k01_ncr',pct(pay,allow));
+    var ncr=allow?pay/allow*100:0; var b=band(ncr,90,85,true); pill('k01_pill',b[0],b[1]);
+
+    // K02
+    var sub=num('k02_sub'), acc=num('k02_acc'); set('k02_ccr',pct(acc,sub));
+    var ccr=sub?acc/sub*100:0; b=band(ccr,95,90,true); pill('k02_pill',b[0],b[1]);
+
+    // K03
+    var cl=num('k03_claims'), f=clamp(num('k03_fprr'),0,100), cap=num('k03_cap'), tg=clamp(num('k03_target'),0,100);
+    var rwNow=Math.max(cl*(1-f/100),0), fteNow=cap>0?rwNow/cap:0, rwTg=Math.max(cl*(1-tg/100),0), fteTg=cap>0?rwTg/cap:0, freed=Math.max(fteNow-fteTg,0);
+    set('k03_rework',Math.round(rwNow).toLocaleString('en-US'));
+    set('k03_ftenow',fteNow.toFixed(1));
+    set('k03_freed','~'+freed.toFixed(1)+' FTE');
+    b=band(f,85,75,true); pill('k03_pill',b[0],b[1]);
+
+    // K04
+    var ar=num('k04_ar'), ann=num('k04_annual'), daily=ann>0?ann/365:0, days=daily>0?ar/daily:0;
+    set('k04_daily',money(daily));
+    if(ann<=0){ set('k04_days','—'); pill('k04_pill','watch','Check inputs'); }
+    else { set('k04_days',days.toFixed(1)+' days'); b=band(days,35,50,false); pill('k04_pill',b[0],b[1]); }
+
+    // K05
+    var t5=num('k05_total'), a60=num('k05_60'), a90=num('k05_90');
+    set('k05_60p',pct(a60,t5)); set('k05_90p',pct(a90,t5));
+    var p90=t5>0?clamp(a90/t5*100,0,100):0; b=band(p90,10,15,false); pill('k05_pill',b[0],b[1]);
+
+    // K06
+    var t6=num('k06_total'), n90=Math.min(num('k06_90'),t6), n0=Math.max(t6-n90,0);
+    set('k06_0',money(n0)+' · '+pct(n0,t6)); set('k06_90p',money(n90)+' · '+pct(n90,t6));
+
+    // K07
+    var act=num('k07_actual'), term=num('k07_term'), gap=act-term;
+    if(gap>0) set('k07_gap','+'+gap.toFixed(0)+' days');
+    else if(gap<0) set('k07_gap',Math.abs(gap).toFixed(0)+' days ahead');
+    else set('k07_gap','On term');
+    b=band(gap,0,7,false); pill('k07_pill',b[0],b[1]);
+
+    // K08
+    var clag=num('k08_charge'), plag=num('k08_post'), d8=num('k08_daily');
+    set('k08_total',(clag+plag).toFixed(1)+' days'); set('k08_tied',money(clag*d8));
+    b=band(clag,3,5,false); pill('k08_pill',b[0],b[1]);
+
+    // K09
+    var a9=num('k09_actual'), c9=num('k09_contract'), u9=num('k09_units'), sf=c9-a9;
+    if(sf>0){ set('k09_sf',money(sf)); set('k09_total',money(sf*u9)); pill('k09_pill','off','Off target'); }
+    else { set('k09_sf','$0'); set('k09_total','$0'); pill('k09_pill','ok','On target'); }
+
+    // K10
+    var s10=num('k10_sub'), den=num('k10_denied'), app=num('k10_appealed'), won=num('k10_won'), avg=num('k10_avg');
+    set('k10_drate',pct(den,s10)); set('k10_arate',pct(app,den)); set('k10_overturn',pct(won,app));
+    var unapp=Math.max(den-app,0), ov=app>0?clamp(won/app,0,1):0;
+    set('k10_abandoned',money(unapp*avg*ov));
+    var dr=s10>0?clamp(den/s10*100,0,100):0; b=band(dr,5,12,false); pill('k10_pill',b[0],b[1]);
+
+    // K11
+    var r11=num('k11_resolved'), t11=num('k11_touches'), bic=num('k11_bic'), mn=num('k11_min');
+    var tpc=r11>0?t11/r11:0, excess=Math.max(t11-r11*bic,0), fte=Math.max(excess*mn/60/160,0);
+    set('k11_tpc',tpc.toFixed(1)); set('k11_excess',Math.round(excess).toLocaleString('en-US'));
+    set('k11_fte','~'+fte.toFixed(1)+' FTE');
+    b=band(tpc,1.5,2,false); pill('k11_pill',b[0],b[1]);
+
+    // K12
+    var r12=num('k12_resolved'), f12=num('k12_fte'), d12=num('k12_days'), bm=num('k12_bench');
+    var perday=(f12>0&&d12>0)?r12/f12/d12:0;
+    set('k12_perday',perday.toFixed(1));
+    b=bm>0?band(perday,bm,bm*0.8,true):['watch','Set a benchmark']; pill('k12_pill',b[0],b[1]);
+
+    // B13
+    var bc=num('b13_cost'), bcol=num('b13_collected');
+    var ctcVal=bcol>0?Math.max(bc/bcol*100,0):0;
+    set('b13_ctc', bcol>0? ctcVal.toFixed(1)+'%' : '—');
+    b=band(ctcVal,3,5,false); pill('b13_pill',b[0],b[1]);
+
+    // B14
+    var bi=num('b14_identified'), br=num('b14_recovered');
+    set('b14_nrr', bi>0? pct(br,bi) : '—');
+    var nrr=bi>0?clamp(br/bi*100,0,100):0; b=band(nrr,80,60,true); pill('b14_pill',b[0],b[1]);
+  }
+
+  document.querySelectorAll('.cin').forEach(function(i){i.setAttribute('min','0'); i.addEventListener('input',update);});
+  update();
+
+  // scroll reveal
+  var cards=document.querySelectorAll('.kpi-card');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce||!('IntersectionObserver'in window)){cards.forEach(function(c){c.classList.add('in');});return;}
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  cards.forEach(function(c){io.observe(c);});
+})();
+</script>
