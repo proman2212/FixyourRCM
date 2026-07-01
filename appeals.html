@@ -1,4 +1,12 @@
+<!--
+  (c) 2026 Merwin David. All rights reserved.
+  Revenue Cycle Management portfolio and tools. Original work by Merwin David.
+  Unauthorized copying, reproduction, or redistribution of this code or its
+  data is prohibited. Contact: merwindavid.hire@gmail.com
+-->
 <meta charset="utf-8">
+<meta name="author" content="Merwin David">
+<meta name="copyright" content="(c) 2026 Merwin David. All rights reserved.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -138,12 +146,8 @@
     </div>
   </div>
 
-  <!-- SCENARIO LIBRARY -->
-  <p class="sec-label">2 · Match the denial to the right route</p>
-  <div id="scenarios"></div>
-
   <!-- LETTER BUILDER -->
-  <p class="sec-label">3 · Assemble an appeal letter</p>
+  <p class="sec-label">2 · Assemble an appeal letter</p>
   <div class="card builder">
     <label for="bPayer">Payer</label>
     <input id="bPayer" placeholder="Payer name">
@@ -177,6 +181,10 @@
     </div>
     <div class="letter" id="letter"></div>
   </div>
+
+  <!-- SCENARIO ROUTE (filtered to the selected denial) -->
+  <p class="sec-label">3 · The route for this denial</p>
+  <div id="scenarios"></div>
 
   <p class="foot">Educational tool. Verify each payer's current form, address, and deadline before filing. No data entered here is stored or transmitted.</p>
 </div>
@@ -343,11 +351,14 @@ const SCENARIOS=[
    dl:'Confirm eligibility; if valid, resubmit or appeal with the verification.'}
 ];
 function renderScenarios(){
-  $('scenarios').innerHTML=SCENARIOS.map(s=>`<div class="scen ${s.cls}">
+  const denial=$('bDenial').value;
+  const s=SCENARIOS.find(x=>x.t===denial)||SCENARIOS[0];
+  if(!s){ $('scenarios').innerHTML=''; return; }
+  $('scenarios').innerHTML=`<div class="scen ${s.cls}">
     <h3>${s.t}</h3><span class="route">${s.route}</span>
     <p>${s.d}</p>
     <div class="ev"><b>Attach:</b> ${s.ev.join(' \u00b7 ')}</div>
-    <div class="dl">\u23f1 ${s.dl}</div></div>`).join('');
+    <div class="dl">\u23f1 ${s.dl}</div></div>`;
 }
 
 /* ---------- letter builder ---------- */
@@ -483,7 +494,7 @@ function clearAll(){
   $('result').classList.remove('show'); $('fallback').classList.remove('show');
   lastPayer=null;
   $('bPayer').value='';
-  $('bDenial').selectedIndex=0; $('bSpecialty').selectedIndex=0;
+  $('bDenial').selectedIndex=0; $('bSpecialty').selectedIndex=0; renderScenarios();
   $('bAction').value="reprocess and pay the claim in accordance with the member's benefits";
   ['pName','pMember','pClaim','pDos','pProvider','pDenialDate'].forEach(id=>$(id).value='');
   $('letter').textContent=''; $('letter').classList.remove('show');
@@ -491,7 +502,8 @@ function clearAll(){
 }
 
 /* ---------- wire up ---------- */
-renderScenarios(); fillDenialSelect(); fillSpecialty();
+fillDenialSelect(); fillSpecialty(); renderScenarios();
+$('bDenial').addEventListener('change',renderScenarios);
 $('payerIn').addEventListener('input',()=>renderSuggestions($('payerIn').value));
 $('acList').addEventListener('click',e=>{
   const it=e.target.closest('.ac-item'); if(!it)return;
@@ -505,4 +517,22 @@ $('payerIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault
 $('genBtn').onclick=buildLetter;
 $('copyBtn').onclick=copyLetter;
 $('packetBtn').onclick=buildPacketPDF;
+</script>
+<div style="text-align:center;font:12px/1.6 'IBM Plex Mono',ui-monospace,monospace;color:#93A3B1;padding:24px 16px 34px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px">(c) 2026 Merwin David &middot; All rights reserved &middot; Unauthorized copying prohibited</div>
+<script>
+(function(){
+  // Light deterrents only. Determined users can bypass these; the goal is to
+  // discourage casual copying, not to claim the code is unreadable.
+  document.addEventListener('contextmenu',function(e){
+    var t=(e.target&&e.target.tagName)||'';
+    if(t==='INPUT'||t==='TEXTAREA')return;   // keep paste/select usable in form fields
+    e.preventDefault();
+  },{capture:true});
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(k==='f12'){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&(k==='u'||k==='s')){e.preventDefault();return;}
+  },{capture:true});
+})();
 </script>
