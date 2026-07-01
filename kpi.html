@@ -1,4 +1,12 @@
+<!--
+  (c) 2026 Merwin David. All rights reserved.
+  Revenue Cycle Management portfolio and tools. Original work by Merwin David.
+  Unauthorized copying, reproduction, or redistribution of this code or its
+  data is prohibited. Contact: merwindavid.hire@gmail.com
+-->
 <meta charset="utf-8">
+<meta name="author" content="Merwin David">
+<meta name="copyright" content="(c) 2026 Merwin David. All rights reserved.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +34,7 @@
     color:var(--ink); font-family:var(--body);
     -webkit-font-smoothing:antialiased; line-height:1.55;
   }
-  .kpi-scope{ padding:54px 20px 80px; }
+  .kpi-scope{ padding:104px 20px 80px; }
   .kpi-wrap{max-width:760px; margin:0 auto}
 
   .kpi-eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.22em;
@@ -100,14 +108,37 @@
     .kpi-card{opacity:1; transform:none; transition:none}
     .tlabel .dot{animation:none}
   }
+  /* sticky home bar */
+  .homebar{position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(14,21,29,.9);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+  .homebar-in{max-width:900px; margin:0 auto; padding:11px 18px; display:flex; align-items:center;
+    justify-content:space-between; gap:12px}
+  .hb-brand{font-family:var(--mono); font-size:13px; font-weight:600; letter-spacing:.03em; color:var(--ink); text-decoration:none}
+  .hb-brand b{color:var(--teal)}
+  .hb-home{font-size:13.5px; font-weight:600; color:var(--soft); text-decoration:none; display:inline-flex;
+    align-items:center; gap:7px; padding:8px 15px; border:1px solid var(--line2); border-radius:9px}
+  .hb-home:hover{border-color:var(--teal); color:var(--teal)}
+  /* single-KPI selector */
+  .kpi-filter{position:sticky; top:50px; z-index:40; background:var(--bg); padding:14px 0 16px; margin-bottom:8px}
+  .kpi-filter label{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--clay); font-weight:600; margin-bottom:8px}
+  .kpi-filter select{width:100%; font-family:var(--body); font-size:15px; font-weight:600; color:var(--ink);
+    background:var(--surface2); border:1px solid var(--line2); border-radius:11px; padding:13px 14px; outline:none; cursor:pointer}
+  .kpi-filter select:focus{border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-bg)}
 </style>
 
+<nav class="homebar"><div class="homebar-in"><a href="index.html" class="hb-brand"><b>Fix Your RCM</b> · Merwin David · RCM Expert</a><a href="index.html" class="hb-home">← Home</a></div></nav>
 <section class="kpi-scope">
  <div class="kpi-wrap">
   <p class="kpi-eyebrow">Revenue Cycle · Operating Playbook</p>
   <h1 class="kpi-title">KPIs aren't a report.<br>They're a to-do list.</h1>
   <p class="kpi-thesis">Anyone can recite a formula. What separates an operator is knowing what to do when the number moves. These are the metrics I run a revenue cycle on, and they hold up across primary care, labs, behavioral health, and multispecialty groups. <strong>Edit any number below and the math updates live</strong>, including the status pill, so you can stress test your own book.</p>
   <div class="kpi-rule"></div>
+
+  <div class="kpi-filter">
+    <label for="kpiSelect">Choose a metric</label>
+    <select id="kpiSelect"></select>
+  </div>
 
   <!-- K01 -->
   <article class="kpi-card">
@@ -485,5 +516,40 @@
     es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
   },{threshold:.12});
   cards.forEach(function(c){io.observe(c);});
+})();
+</script>
+<div style="text-align:center;font:12px/1.6 'IBM Plex Mono',ui-monospace,monospace;color:#93A3B1;padding:24px 16px 34px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px">(c) 2026 Merwin David &middot; All rights reserved &middot; Unauthorized copying prohibited</div>
+<script>
+(function(){
+  // Light deterrents only. Determined users can bypass these; the goal is to
+  // discourage casual copying, not to claim the code is unreadable.
+  document.addEventListener('contextmenu',function(e){
+    var t=(e.target&&e.target.tagName)||'';
+    if(t==='INPUT'||t==='TEXTAREA')return;   // keep paste/select usable in form fields
+    e.preventDefault();
+  },{capture:true});
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(k==='f12'){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&(k==='u'||k==='s')){e.preventDefault();return;}
+  },{capture:true});
+})();
+</script>
+<script>
+(function(){
+  var cards=[].slice.call(document.querySelectorAll('.kpi-card'));
+  var sel=document.getElementById('kpiSelect');
+  if(!sel||!cards.length) return;
+  cards.forEach(function(c,i){
+    var nm=c.querySelector('.kpi-name');
+    var o=document.createElement('option');
+    o.value=String(i);
+    o.textContent=nm?nm.textContent.trim():('KPI '+(i+1));
+    sel.appendChild(o);
+  });
+  function show(idx){ cards.forEach(function(c,i){ c.style.display=(i===idx)?'':'none'; }); }
+  sel.addEventListener('change',function(){ show(parseInt(sel.value,10)||0); });
+  show(0);
 })();
 </script>
