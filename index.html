@@ -1,4 +1,12 @@
+<!--
+  (c) 2026 Merwin David. All rights reserved.
+  Revenue Cycle Management portfolio and tools. Original work by Merwin David.
+  Unauthorized copying, reproduction, or redistribution of this code or its
+  data is prohibited. Contact: merwindavid.hire@gmail.com
+-->
 <meta charset="utf-8">
+<meta name="author" content="Merwin David">
+<meta name="copyright" content="(c) 2026 Merwin David. All rights reserved.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Merwin David · Revenue Cycle Operations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,12 +140,14 @@
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#featured">Featured</a>
+      <a href="tfltracker.html">Timely Filing</a>
       <div class="dropdown" id="toolsDrop">
-        <button class="drop-toggle" id="toolsToggle">Tools <span class="car">&#9662;</span></button>
+        <button class="drop-toggle" id="toolsToggle">Tools (4) <span class="car">&#9662;</span></button>
         <div class="dropmenu">
-          <a href="./kpi.html">KPI Playbook<small>12 live revenue-cycle calculators</small></a>
-          <a href="./appeals.html">Appeals Workbench<small>Payer forms, denial routes, letter builder</small></a>
-          <a href="./authorization.html">Authorization Tracker<small>Encrypted, expiry reminders</small></a>
+          <a href="kpi.html">KPI Playbook<small>14 live revenue-cycle metrics</small></a>
+          <a href="appeals.html">Appeals Workbench<small>Payer forms, denial routes, letter builder</small></a>
+          <a href="authorization.html">Authorization Tracker<small>Encrypted, expiry reminders</small></a>
+          <a href="tfltracker.html">Timely Filing Tracker<small>Filing, appeal &amp; corrected-claim windows</small></a>
         </div>
       </div>
       <a href="#contact">Contact</a>
@@ -149,17 +159,18 @@
 
   <header class="hero">
     <p class="eyebrow">Merwin David · CRCR, CSMC</p>
-    <h1>Earned Revenue should NEVER leak out of the cycle.</h1>
-    <p class="lede">Revenue cycle operations leader with <strong>14+ years</strong> building and scaling high-performance teams across Primary care, Surgery, Radiology, Labs, Optometry, Behavioral health, Therapy and multispecialty. I bridge operations and engineering, turn manual judgment into tooling, and stop denials at the source.</p>
+    <h1>Earned revenue should not leak out of the cycle.</h1>
+    <p class="lede">Revenue cycle operations leader with <strong>13+ years</strong> building and scaling high-performance teams across primary care, labs, behavioral health, and multispecialty. I bridge operations and engineering, turn manual judgment into tooling, and stop denials at the source.</p>
     <div class="cta">
       <a class="btn btn-primary" id="ctaExp" href="#experience">View my experience</a>
       <a class="btn btn-ghost" id="ctaFeat" href="#featured">See featured work</a>
       <div class="dropdown" id="toolsDropHero">
-        <button class="btn btn-ghost" id="toolsToggleHero">Tools <span class="car">&#9662;</span></button>
+        <button class="btn btn-ghost" id="toolsToggleHero">Tools (4) <span class="car">&#9662;</span></button>
         <div class="dropmenu">
-          <a href="./kpi.html">KPI Playbook<small>12 live revenue-cycle calculators</small></a>
-          <a href="./appeals.html">Appeals Workbench<small>Payer forms, denial routes, letter builder</small></a>
-          <a href="./authorization.html">Authorization Tracker<small>Encrypted, expiry reminders</small></a>
+          <a href="kpi.html">KPI Playbook<small>14 live revenue-cycle metrics</small></a>
+          <a href="appeals.html">Appeals Workbench<small>Payer forms, denial routes, letter builder</small></a>
+          <a href="authorization.html">Authorization Tracker<small>Encrypted, expiry reminders</small></a>
+          <a href="tfltracker.html">Timely Filing Tracker<small>Filing, appeal &amp; corrected-claim windows</small></a>
         </div>
       </div>
     </div>
@@ -174,7 +185,7 @@
   <!-- ABOUT -->
   <section id="about">
     <p class="sec-label">About</p>
-    <h2 class="sec-h">Operations leader who builds the SYSTEM, not just the TEAM.</h2>
+    <h2 class="sec-h">Operations leader who builds the system, not just the team.</h2>
     <p class="about-p">I have spent my career building and scaling revenue cycle operations in complex, multi-client environments, leading cross-functional teams of more than 100 people and carrying P&amp;L accountability. My edge is bridging operations and technology: I work directly with engineering to turn manual judgment into tooling, design KPI frameworks that make performance visible, and use automation and data to drive measurable, durable gains. I am just as comfortable in a regulated compliance setting, in front of a client, or inside a product roadmap conversation.</p>
 
     <div class="stats">
@@ -359,4 +370,22 @@
   track.addEventListener('scroll',function(){ window.requestAnimationFrame(syncDots); });
   document.getElementById('carPrev').addEventListener('click',function(){ track.scrollBy({left:-step(), behavior:'smooth'}); });
   document.getElementById('carNext').addEventListener('click',function(){ track.scrollBy({left:step(), behavior:'smooth'}); });
+</script>
+<div style="text-align:center;font:12px/1.6 'IBM Plex Mono',ui-monospace,monospace;color:#93A3B1;padding:24px 16px 34px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px">(c) 2026 Merwin David &middot; All rights reserved &middot; Unauthorized copying prohibited</div>
+<script>
+(function(){
+  // Light deterrents only. Determined users can bypass these; the goal is to
+  // discourage casual copying, not to claim the code is unreadable.
+  document.addEventListener('contextmenu',function(e){
+    var t=(e.target&&e.target.tagName)||'';
+    if(t==='INPUT'||t==='TEXTAREA')return;   // keep paste/select usable in form fields
+    e.preventDefault();
+  },{capture:true});
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(k==='f12'){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&(k==='u'||k==='s')){e.preventDefault();return;}
+  },{capture:true});
+})();
 </script>
