@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<!--
+  (c) 2026 Merwin David. All rights reserved.
+  Revenue Cycle Management portfolio and tools. Original work by Merwin David.
+  Unauthorized copying, reproduction, or redistribution of this code or its
+  data is prohibited. Contact: merwindavid.hire@gmail.com
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Merwin David">
+<meta name="copyright" content="(c) 2026 Merwin David. All rights reserved.">
+<title>Claim Scrubber &middot; Fix Your RCM &middot; Merwin David</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0E151D;--panel:#161F2A;--panel2:#1B2530;--ink:#E8EDF2;--muted:#93A3B1;
+    --line:#27323F;--line2:#34414F;--teal:#3AC9BC;--teal-bg:rgba(58,201,188,.13);
+    --clay:#E2975B;--clay-bg:rgba(226,151,91,.15);--red:#F2837A;--red-bg:rgba(242,131,122,.15);
+    --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+  *{box-sizing:border-box}
+  body{margin:0;background-color:var(--bg);
+    background-image:radial-gradient(1100px 560px at 50% -10%,rgba(58,201,188,.10),transparent 72%),
+      linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+    background-size:auto,32px 32px,32px 32px;background-attachment:fixed;
+    color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .homebar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(14,21,29,.92);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .homebar-in{max-width:1240px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .hb-brand{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);text-decoration:none}
+  .hb-brand b{color:var(--teal)}
+  .hb-home{font-size:13.5px;font-weight:600;color:var(--muted);text-decoration:none;padding:8px 15px;border:1px solid var(--line2);border-radius:9px}
+  .hb-home:hover{border-color:var(--teal);color:var(--teal)}
+  .wrap{max-width:1240px;margin:0 auto;padding:96px 22px 70px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:600;margin:0 0 10px}
+  h1{font-family:var(--display);font-size:31px;margin:0 0 10px;font-weight:700;letter-spacing:-.02em;line-height:1.12}
+  h2{font-family:var(--display);font-size:19px;margin:0 0 4px;font-weight:600}
+  .h2sub{color:var(--muted);font-size:12.5px;margin:0 0 14px;line-height:1.65}
+  .thesis{color:var(--muted);font-size:15px;margin:0 0 10px;max-width:86ch;line-height:1.65}
+  .rule{height:1px;background:var(--line);margin:22px 0}
+  .notice{border-radius:12px;padding:13px 15px;font-size:13px;margin:0 0 14px;line-height:1.65}
+  .notice.phi{background:var(--red-bg);border:1px solid rgba(242,131,122,.35);color:#FBC4BF}
+  .notice.phi b{color:#FFD9D5}
+  .notice.info{background:var(--clay-bg);border:1px solid rgba(226,151,91,.35);color:#F0C9A0}
+  .notice.info b{color:#F6D9B8}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+  .sec-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--clay);font-weight:600;margin:0 0 12px}
+  #drop{border:2px dashed var(--line2);border-radius:14px;padding:42px 20px;text-align:center;cursor:pointer;background:var(--panel2);transition:.15s}
+  #drop.over{border-color:var(--teal);background:rgba(58,201,188,.08)}
+  #drop .big{font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:6px}
+  #drop .small{color:var(--muted);font-size:13px}
+  .btns{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .btns.left{justify-content:flex-start}
+  button,.btn{font-family:var(--body);background:var(--teal);color:#07221E;border:1px solid var(--teal);border-radius:10px;padding:10px 17px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+  button:hover,.btn:hover{background:#54d6c9;border-color:#54d6c9}
+  .btn-sec{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+  .btn-sec:hover{background:transparent;border-color:var(--teal);color:var(--teal)}
+  input[type=file]{display:none}
+  .stats{display:flex;gap:12px;flex-wrap:wrap}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:116px}
+  .stat .n{font-family:var(--display);font-size:25px;font-weight:700;color:var(--teal)}
+  .stat .n.err{color:var(--red)} .stat .n.warn{color:var(--clay)}
+  .stat .l{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  select,input[type=text]{font-family:var(--body);background:var(--bg);color:var(--ink);border:1px solid var(--line2);border-radius:9px;padding:9px 11px;font-size:13px;outline:none}
+  select:focus,input[type=text]:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+  .tablewrap{overflow:auto;max-height:540px;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--panel2);position:sticky;top:0;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);z-index:1}
+  tr:hover td{background:rgba(255,255,255,.03)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  code{font-family:var(--mono);font-size:11.5px;color:var(--teal)}
+  .pill{font-family:var(--mono);font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+  .pill.error{background:var(--red-bg);color:var(--red)}
+  .pill.warning{background:var(--clay-bg);color:var(--clay)}
+  .pill.info{background:var(--teal-bg);color:var(--teal)}
+  .pill.off{background:rgba(255,255,255,.06);color:var(--muted)}
+  .hidden{display:none}
+  .note{color:var(--muted);font-size:12.5px;margin-top:12px;line-height:1.65}
+  .rulelist{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+  .rr{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-bottom:1px solid var(--line)}
+  .rr:last-child{border-bottom:none}
+  .rr.dim{opacity:.55}
+  .rr input{margin-top:3px;accent-color:var(--teal)}
+  .rr .meta{flex:1}
+  .rr .rid{font-family:var(--mono);font-size:11px;color:var(--teal);font-weight:600}
+  .rr .rname{font-size:13.5px;font-weight:600;margin:2px 0}
+  .rr .rsrc{font-size:11.5px;color:var(--muted)}
+  .rr .rwhy{font-size:11.5px;color:var(--clay);margin-top:3px}
+  .log{font-family:var(--mono);font-size:12px;color:var(--muted);max-height:130px;overflow:auto;margin-top:12px}
+  .log .err{color:var(--red)} .log .ok{color:var(--teal)}
+  .site-foot{text-align:center;font:12px/1.6 var(--mono);color:var(--muted);padding:24px 22px 34px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px}
+</style>
+</head>
+<body>
+<nav class="homebar"><div class="homebar-in"><a href="index.html" class="hb-brand"><b>Fix Your RCM</b> &middot; Merwin David &middot; RCM Expert</a><a href="index.html" class="hb-home">&larr; Home</a></div></nav>
+<div class="wrap">
+  <p class="eyebrow">Revenue Cycle &middot; Pre-Submission Tool</p>
+  <h1>Claim Scrubber</h1>
+  <p class="thesis">Drop an X12 837 claim file, professional or institutional, and it runs the rule library below before the claim ever reaches a payer. Drop an 835 remittance instead and it reads the claim adjustment reason codes to show which denials were preventable, and which scrub rule would have caught each one.</p>
+
+  <div class="rule"></div>
+
+  <div class="notice phi"><b>An 837 contains PHI.</b> Everything runs locally in your browser. No file is uploaded, transmitted, or stored, and nothing persists when you close the tab. On a shared or public device, use de-identified test files only.</div>
+
+  <div class="notice info"><b>Where these rules come from.</b> This engine is original work built on published US standards: the X12 837P and 837I implementation guides, the CMS National Correct Coding Initiative, the CMS Claims Processing Manual, AMA CPT conventions, ICD-10-CM guidelines, and 42 CFR. Every rule cites the public source it rests on. It does not reproduce any payer's proprietary edit list. Rules that need a CMS reference file, a fee schedule indicator, or claim history are shown as inactive rather than guessing.</p></div>
+
+  <p class="sec-label">1 &middot; Load a file</p>
+  <div class="card">
+    <div id="drop">
+      <div class="big">Drop 837 or 835 files here</div>
+      <div class="small">Format detected automatically. Professional (837P) and institutional (837I) both supported</div>
+      <div class="btns">
+        <label class="btn" for="fileInput">Choose files</label>
+        <label class="btn btn-sec" for="ptpInput">Load CMS NCCI PTP</label>
+        <label class="btn btn-sec" for="mueInput">Load CMS MUE</label>
+        <button class="btn-sec" id="sampleP" type="button">Try a sample 837P</button>
+        <button class="btn-sec" id="sampleI" type="button">Try a sample 837I</button>
+      </div>
+      <input type="file" id="fileInput" multiple>
+      <input type="file" id="ptpInput" accept=".csv,text/csv">
+      <input type="file" id="mueInput" accept=".csv,text/csv">
+    </div>
+    <div class="note" id="cmsNote"></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <div class="card hidden" id="statsCard">
+    <div class="stats">
+      <div class="stat"><div class="n" id="sFiles">0</div><div class="l">Files</div></div>
+      <div class="stat"><div class="n" id="sClaims">0</div><div class="l">Claims</div></div>
+      <div class="stat"><div class="n" id="sLines">0</div><div class="l">Service lines</div></div>
+      <div class="stat"><div class="n err" id="sErr">0</div><div class="l">Errors</div></div>
+      <div class="stat"><div class="n warn" id="sWarn">0</div><div class="l">Warnings</div></div>
+      <div class="stat"><div class="n" id="sInfo">0</div><div class="l">Advisories</div></div>
+      <div class="stat"><div class="n" id="sClean">0</div><div class="l">Clean claims</div></div>
+    </div>
+    <div class="btns left" style="margin-top:18px">
+      <button id="dlFindings">&#11015; Export findings (CSV)</button>
+      <button class="btn-sec" id="resetBtn">Clear &amp; start over</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="findCard">
+    <h2>Scrub findings</h2>
+    <p class="h2sub">Errors will very likely reject or deny. Warnings are payer-dependent and worth a look. Advisories are judgment calls.</p>
+    <div class="filters">
+      <select id="fSev"><option value="">All severities</option><option value="error">Errors only</option><option value="warning">Warnings only</option><option value="info">Advisories only</option></select>
+      <select id="fCat"><option value="">All categories</option></select>
+      <input type="text" id="fSearch" placeholder="Search claim, code, or message" style="min-width:250px">
+      <span class="note" id="fCount" style="margin:0"></span>
+    </div>
+    <div class="tablewrap"><table id="findTable"></table></div>
+  </div>
+
+  <div class="card hidden" id="denialCard">
+    <h2>Denial pattern analysis (835)</h2>
+    <p class="h2sub">Adjustment reason codes ranked by dollars withheld. The right column maps each reason to the scrub rule that would have caught it upstream.</p>
+    <div class="tablewrap"><table id="denialTable"></table></div>
+    <div class="note">Amounts reflect CAS adjustment amounts, not the full billed charge. Reason code meanings are summarized in plain language, not reproduced from the X12 code list.</div>
+  </div>
+
+  <p class="sec-label">Rule library</p>
+  <div class="card">
+    <h2>Every rule this tool runs</h2>
+    <p class="h2sub">Each rule cites the public standard it rests on, so you can defend it in a payer conversation. Toggle any rule off and reload a file to rerun.</p>
+    <div class="filters">
+      <select id="rCat"></select>
+      <input type="text" id="rSearch" placeholder="Search rules" style="min-width:220px">
+      <button class="btn-sec" id="allOn">Enable all</button>
+      <button class="btn-sec" id="allOff">Disable all</button>
+      <button class="btn-sec" id="dlRules">&#11015; Export rule library (CSV)</button>
+      <span class="note" id="ruleCount" style="margin:0"></span>
+    </div>
+    <div class="rulelist" id="ruleList"></div>
+  </div>
+
+  <p class="note">Educational tool, not billing or legal advice. Rules reflect commonly published US standards and payer conventions; specific requirements vary by payer, plan, state, and contract. Always validate against your clearinghouse edits and payer companion guides before submission.</p>
+</div>
+
+<script type="application/json" id="rulesData">[{"id":"S001","cat":"Structure","sev":"error","name":"ISA and IEA control numbers do not match","src":"X12 005010 interchange envelope","t":"env_isa_iea","p":{}},{"id":"S002","cat":"Structure","sev":"error","name":"GS and GE control numbers do not match","src":"X12 005010 interchange envelope","t":"env_gs_ge","p":{}},{"id":"S003","cat":"Structure","sev":"error","name":"ST and SE control numbers do not match","src":"X12 005010 interchange envelope","t":"env_st_se","p":{}},{"id":"S004","cat":"Structure","sev":"error","name":"SE segment count does not match the actual count","src":"X12 005010 interchange envelope","t":"env_se_count","p":{}},{"id":"S005","cat":"Structure","sev":"error","name":"Missing BHT segment","src":"X12 005010X222A1 (837P)","t":"env_bht","p":{}},{"id":"S006","cat":"Structure","sev":"error","name":"Claim has no service lines","src":"X12 005010X222A1 (837P)","t":"no_lines","p":{}},{"id":"S007","cat":"Structure","sev":"error","name":"Service date is not a valid CCYYMMDD value","src":"X12 005010X222A1 (837P)","t":"dos_format","p":{}},{"id":"S008","cat":"Structure","sev":"error","name":"Claim statement start date is after the end date","src":"X12 005010X222A1 (837P)","t":"stmt_order","p":{}},{"id":"S009","cat":"Structure","sev":"warning","name":"Claim frequency code is missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"freq","label":"Claim frequency code (CLM05-3)"}},{"id":"S010","cat":"Structure","sev":"warning","name":"Replacement or void claim has no original reference number","src":"X12 005010X222A1 (837P)","t":"freq_ref","p":{}},{"id":"P001","cat":"Provider","sev":"error","name":"Billing provider NPI missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"billing.npi","label":"Billing provider NPI"}},{"id":"P002","cat":"Provider","sev":"error","name":"Billing provider NPI is not 10 digits","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi_len","p":{"get":"billing.npi","who":"Billing provider"}},{"id":"P003","cat":"Provider","sev":"error","name":"Billing provider NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"billing.npi","who":"Billing provider"}},{"id":"P004","cat":"Provider","sev":"error","name":"Rendering provider NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"rendering.npi","who":"Rendering provider"}},{"id":"P005","cat":"Provider","sev":"error","name":"Referring provider NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"referring.npi","who":"Referring provider"}},{"id":"P006","cat":"Provider","sev":"error","name":"Service facility NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"facility.npi","who":"Service facility"}},{"id":"P007","cat":"Provider","sev":"error","name":"Supervising provider NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"supervising.npi","who":"Supervising provider"}},{"id":"P008","cat":"Provider","sev":"warning","name":"Billing provider taxonomy code missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"billing.taxonomy","label":"Billing provider taxonomy"}},{"id":"P009","cat":"Provider","sev":"warning","name":"Taxonomy code is not a valid 10-character value","src":"X12 005010X222A1 (837P)","t":"taxonomy_fmt","p":{}},{"id":"P010","cat":"Provider","sev":"warning","name":"Billing provider tax ID missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"billing.taxId","label":"Billing provider tax ID"}},{"id":"P011","cat":"Provider","sev":"warning","name":"Tax ID is not 9 digits","src":"X12 005010X222A1 (837P)","t":"taxid_fmt","p":{}},{"id":"P012","cat":"Provider","sev":"error","name":"Billing provider address missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"billing.addr","label":"Billing provider street address"}},{"id":"P013","cat":"Provider","sev":"warning","name":"Billing provider ZIP is not 9 digits","src":"CMS Claims Processing Manual, Ch. 12","t":"zip9","p":{"get":"billing.zip","who":"Billing provider"}},{"id":"P014","cat":"Provider","sev":"warning","name":"Service facility ZIP is not 9 digits","src":"CMS Claims Processing Manual, Ch. 12","t":"zip9","p":{"get":"facility.zip","who":"Service facility"}},{"id":"P015","cat":"Provider","sev":"warning","name":"Billing provider address appears to be a PO Box","src":"CMS Claims Processing Manual, Ch. 12","t":"pobox","p":{}},{"id":"P016","cat":"Provider","sev":"warning","name":"Rendering provider reported but no NPI given","src":"X12 005010X222A1 (837P)","t":"rendering_no_npi","p":{}},{"id":"B001","cat":"Subscriber","sev":"error","name":"Subscriber member ID missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"subscriber.memberId","label":"Subscriber member ID"}},{"id":"B002","cat":"Subscriber","sev":"error","name":"Medicare MBI format is invalid","src":"CMS MBI format specification","t":"mbi","p":{}},{"id":"B003","cat":"Subscriber","sev":"warning","name":"Member ID looks like a retired SSN-based Medicare number","src":"CMS MBI format specification","t":"hicn","p":{}},{"id":"B004","cat":"Subscriber","sev":"error","name":"Subscriber date of birth missing or invalid","src":"X12 005010X222A1 (837P)","t":"dob_valid","p":{}},{"id":"B005","cat":"Subscriber","sev":"error","name":"Subscriber gender code is not M, F or U","src":"X12 005010X222A1 (837P)","t":"gender_code","p":{}},{"id":"B006","cat":"Subscriber","sev":"error","name":"Subscriber last name missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"subscriber.last","label":"Subscriber last name"}},{"id":"B007","cat":"Subscriber","sev":"error","name":"Payer name and identifier are both missing","src":"X12 005010X222A1 (837P)","t":"payer_present","p":{}},{"id":"B008","cat":"Subscriber","sev":"error","name":"Subscriber relationship code missing","src":"X12 005010X222A1 (837P)","t":"req","p":{"get":"sbr.rel","label":"Relationship to subscriber (SBR02)"}},{"id":"B009","cat":"Subscriber","sev":"warning","name":"Non-primary claim carries no prior payer adjustments","src":"HIPAA 837 coordination of benefits requirements","t":"cob_cas","p":{}},{"id":"B010","cat":"Subscriber","sev":"warning","name":"Non-primary claim carries no prior payer paid amount","src":"HIPAA 837 coordination of benefits requirements","t":"cob_amt","p":{}},{"id":"B011","cat":"Subscriber","sev":"warning","name":"Prior payer paid plus adjustments does not reconcile to the charge","src":"HIPAA 837 coordination of benefits requirements","t":"cob_balance","p":{}},{"id":"B012","cat":"Subscriber","sev":"warning","name":"Medicare is primary; submit as a secondary claim after Medicare adjudicates","src":"HIPAA 837 coordination of benefits requirements","t":"medicare_primary","p":{}},{"id":"B013","cat":"Subscriber","sev":"error","name":"Date of birth is in the future","src":"X12 005010X222A1 (837P)","t":"dob_future","p":{}},{"id":"B014","cat":"Subscriber","sev":"warning","name":"Patient age exceeds 120 years","src":"X12 005010X222A1 (837P)","t":"age_absurd","p":{}},{"id":"D001","cat":"Diagnosis","sev":"error","name":"Claim carries no diagnosis code","src":"X12 005010X222A1 (837P)","t":"dx_present","p":{}},{"id":"D002","cat":"Diagnosis","sev":"error","name":"Diagnosis fails ICD-10-CM format","src":"ICD-10-CM official guidelines","t":"dx_format","p":{}},{"id":"D003","cat":"Diagnosis","sev":"error","name":"Diagnosis pointer references a diagnosis that does not exist","src":"X12 005010X222A1 (837P)","t":"dx_pointer","p":{}},{"id":"D004","cat":"Diagnosis","sev":"error","name":"More than 12 diagnoses on the claim","src":"X12 005010X222A1 (837P)","t":"dx_count","p":{"max":12}},{"id":"D005","cat":"Diagnosis","sev":"error","name":"Duplicate diagnosis code","src":"ICD-10-CM official guidelines","t":"dx_dup","p":{}},{"id":"D006","cat":"Diagnosis","sev":"error","name":"Sex-specific diagnosis conflicts with the patient gender","src":"ICD-10-CM official guidelines","t":"dx_gender","p":{}},{"id":"D007","cat":"Diagnosis","sev":"warning","name":"Perinatal code used beyond the newborn period","src":"ICD-10-CM official guidelines","t":"dx_perinatal","p":{}},{"id":"D008","cat":"Diagnosis","sev":"info","name":"Diagnosis ends in 9 and may be the unspecified option","src":"ICD-10-CM official guidelines","t":"dx_unspec","p":{}},{"id":"D009","cat":"Diagnosis","sev":"warning","name":"Service line has no diagnosis pointer","src":"X12 005010X222A1 (837P)","t":"dx_no_pointer","p":{}},{"id":"D010","cat":"Diagnosis","sev":"error","name":"More than four diagnosis pointers on a line","src":"X12 005010X222A1 (837P)","t":"dx_ptr_count","p":{"max":4}},{"id":"D011","cat":"Diagnosis","sev":"warning","name":"Manifestation code used as the principal diagnosis","src":"ICD-10-CM official guidelines","t":"dx_manifestation","p":{},"req":"ref"},{"id":"D012","cat":"Diagnosis","sev":"warning","name":"External cause code used as the principal diagnosis","src":"ICD-10-CM official guidelines","t":"dx_external_first","p":{}},{"id":"D013","cat":"Diagnosis","sev":"warning","name":"Maternity diagnosis without a trimester character","src":"ICD-10-CM official guidelines","t":"dx_trimester","p":{}},{"id":"D014","cat":"Diagnosis","sev":"error","name":"Laterality is required but the code has none","src":"ICD-10-CM official guidelines","t":"dx_laterality","p":{},"req":"ref"},{"id":"D015","cat":"Diagnosis","sev":"warning","name":"Sequela (7th character S) without the underlying condition","src":"ICD-10-CM official guidelines","t":"dx_sequela","p":{}},{"id":"D016","cat":"Diagnosis","sev":"info","name":"Diagnosis is an unacceptable principal diagnosis","src":"ICD-10-CM official guidelines","t":"dx_unacceptable_pdx","p":{},"req":"ref"},{"id":"C001","cat":"Procedure","sev":"error","name":"Procedure fails CPT or HCPCS format","src":"AMA CPT coding guidelines","t":"cpt_format","p":{}},{"id":"C002","cat":"Procedure","sev":"error","name":"More than four modifiers on a line","src":"X12 005010X222A1 (837P)","t":"mod_count","p":{"max":4}},{"id":"C003","cat":"Procedure","sev":"error","name":"Modifier format is invalid","src":"AMA CPT Appendix A (modifiers)","t":"mod_format","p":{}},{"id":"C004","cat":"Procedure","sev":"error","name":"Units are zero or negative","src":"X12 005010X222A1 (837P)","t":"units_pos","p":{}},{"id":"C005","cat":"Procedure","sev":"error","name":"Line charge is zero or negative","src":"X12 005010X222A1 (837P)","t":"charge_pos","p":{}},{"id":"C006","cat":"Procedure","sev":"error","name":"Duplicate service line on the same claim","src":"CMS NCCI Policy Manual","t":"dup_line","p":{}},{"id":"C007","cat":"Procedure","sev":"error","name":"NCCI procedure-to-procedure conflict (requires CMS file)","src":"CMS NCCI PTP edit tables","t":"ptp","p":{},"req":"ptp"},{"id":"C008","cat":"Procedure","sev":"error","name":"Units exceed the Medically Unlikely Edit (requires CMS file)","src":"CMS MUE tables","t":"mue","p":{},"req":"mue"},{"id":"C009","cat":"Procedure","sev":"error","name":"Panel component unbundled from its panel","src":"CMS NCCI Policy Manual","t":"panel","p":{}},{"id":"C010","cat":"Procedure","sev":"error","name":"Add-on code billed without its primary procedure","src":"CMS NCCI Policy Manual","t":"addon","p":{}},{"id":"C011","cat":"Procedure","sev":"error","name":"Sex-specific procedure conflicts with the patient gender","src":"AMA CPT coding guidelines","t":"cpt_gender","p":{}},{"id":"C012","cat":"Procedure","sev":"error","name":"Preventive visit code does not match the patient age","src":"AMA CPT coding guidelines","t":"age_band","p":{}},{"id":"C013","cat":"Procedure","sev":"warning","name":"Evaluation and management billed with more than one unit","src":"CMS Claims Processing Manual, Ch. 12","t":"units_max","p":{"set":"EM","max":1}},{"id":"C014","cat":"Procedure","sev":"warning","name":"E/M billed with a procedure and no modifier 25","src":"CMS NCCI Policy Manual","t":"em_needs_25","p":{}},{"id":"C015","cat":"Procedure","sev":"info","name":"Distinct procedural service modifier used with no detected conflict","src":"CMS NCCI Policy Manual","t":"mod59_no_conflict","p":{}},{"id":"C016","cat":"Procedure","sev":"error","name":"Newborn care code billed for a patient over 28 days","src":"AMA CPT coding guidelines","t":"newborn_age","p":{}},{"id":"C017","cat":"Procedure","sev":"error","name":"Global obstetric package billed with a delivery-only code","src":"AMA CPT maternity care and delivery guidelines","t":"ob_global_conflict","p":{}},{"id":"C018","cat":"Procedure","sev":"error","name":"Global obstetric package billed with antepartum care codes","src":"AMA CPT maternity care and delivery guidelines","t":"ob_global_ante","p":{}},{"id":"C019","cat":"Procedure","sev":"warning","name":"Unlisted procedure code requires supporting documentation","src":"AMA CPT coding guidelines","t":"unlisted","p":{}},{"id":"C020","cat":"Procedure","sev":"warning","name":"Modifier 51 applied to an add-on code","src":"AMA CPT Appendix A (modifiers)","t":"mod51_addon","p":{}},{"id":"C021","cat":"Procedure","sev":"warning","name":"Bilateral modifier applied to an inherently bilateral code","src":"AMA CPT Appendix A (modifiers)","t":"bilateral_inherent","p":{},"req":"mpfs"},{"id":"C022","cat":"Procedure","sev":"warning","name":"Assistant at surgery modifier requires verification against the fee schedule","src":"CMS Claims Processing Manual, Ch. 12","t":"assistant_verify","p":{}},{"id":"C023","cat":"Procedure","sev":"info","name":"Increased procedural services modifier requires documentation","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"22","msg":"Modifier 22 asserts substantially greater work. Attach documentation and a cover letter."}},{"id":"C024","cat":"Procedure","sev":"info","name":"Unrelated E/M during the global period","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"24","msg":"Modifier 24 asserts the E/M is unrelated to the global surgical package."}},{"id":"C025","cat":"Procedure","sev":"info","name":"Decision for surgery modifier","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"57","msg":"Modifier 57 applies to the E/M where the decision for major surgery was made."}},{"id":"C026","cat":"Procedure","sev":"info","name":"Staged or related procedure during the global period","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"58","msg":"Modifier 58 asserts a staged or more extensive planned procedure."}},{"id":"C027","cat":"Procedure","sev":"info","name":"Unplanned return to the operating room","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"78","msg":"Modifier 78 asserts an unplanned return to the operating room during the global period."}},{"id":"C028","cat":"Procedure","sev":"info","name":"Unrelated procedure during the global period","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"79","msg":"Modifier 79 asserts an unrelated procedure during the global period."}},{"id":"C029","cat":"Procedure","sev":"warning","name":"Reduced services modifier with a full charge","src":"AMA CPT Appendix A (modifiers)","t":"mod52_charge","p":{}},{"id":"C030","cat":"Procedure","sev":"info","name":"Preventive service modifier applied","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"33","msg":"Modifier 33 identifies a preventive service exempt from cost sharing."}},{"id":"C031","cat":"Procedure","sev":"warning","name":"Screening colonoscopy converted to diagnostic without modifier PT","src":"AMA CPT coding guidelines","t":"colon_pt","p":{}},{"id":"C032","cat":"Procedure","sev":"warning","name":"Telephone or online E/M billed with an in-person place of service","src":"AMA CPT coding guidelines","t":"virtual_em_pos","p":{}},{"id":"C033","cat":"Procedure","sev":"error","name":"Procedure code is all zeros or a placeholder","src":"AMA CPT coding guidelines","t":"cpt_placeholder","p":{}},{"id":"M001","cat":"Modifier","sev":"error","name":"Modifiers 26 and TC cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"26","b":"TC","msg":"Professional and technical components cannot both apply to one line"}},{"id":"M002","cat":"Modifier","sev":"error","name":"Modifiers 50 and LT cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"50","b":"LT","msg":"Bilateral modifier cannot be combined with a laterality modifier"}},{"id":"M003","cat":"Modifier","sev":"error","name":"Modifiers 50 and RT cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"50","b":"RT","msg":"Bilateral modifier cannot be combined with a laterality modifier"}},{"id":"M004","cat":"Modifier","sev":"error","name":"Modifiers LT and RT cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"LT","b":"RT","msg":"Left and right laterality modifiers conflict on one line"}},{"id":"M005","cat":"Modifier","sev":"error","name":"Modifiers 76 and 77 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"76","b":"77","msg":"Repeat by the same and by a different physician conflict"}},{"id":"M006","cat":"Modifier","sev":"error","name":"Modifiers 78 and 79 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"78","b":"79","msg":"Return to the operating room and unrelated procedure conflict"}},{"id":"M007","cat":"Modifier","sev":"error","name":"Modifiers 52 and 53 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"52","b":"53","msg":"Reduced services and discontinued procedure conflict"}},{"id":"M008","cat":"Modifier","sev":"error","name":"Modifiers 54 and 55 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"54","b":"55","msg":"Surgical care only and postoperative management only conflict"}},{"id":"M009","cat":"Modifier","sev":"error","name":"Modifiers GA and GZ cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"GA","b":"GZ","msg":"An ABN was and was not obtained; these conflict"}},{"id":"M010","cat":"Modifier","sev":"error","name":"Modifiers GA and GY cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"GA","b":"GY","msg":"A statutorily excluded service does not take an ABN modifier"}},{"id":"M011","cat":"Modifier","sev":"error","name":"Modifiers JW and JZ cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"JW","b":"JZ","msg":"Drug wastage and zero wastage conflict"}},{"id":"M012","cat":"Modifier","sev":"error","name":"Modifiers 80 and AS cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"80","b":"AS","msg":"Physician assistant surgeon and non-physician assistant conflict"}},{"id":"M013","cat":"Modifier","sev":"error","name":"Modifiers 81 and AS cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"81","b":"AS","msg":"Minimum assistant surgeon and non-physician assistant conflict"}},{"id":"M014","cat":"Modifier","sev":"error","name":"Modifiers 82 and AS cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"82","b":"AS","msg":"Assistant surgeon modifiers conflict"}},{"id":"M015","cat":"Modifier","sev":"error","name":"Modifiers 62 and 80 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"62","b":"80","msg":"Co-surgeon and assistant surgeon conflict"}},{"id":"M016","cat":"Modifier","sev":"error","name":"Modifiers 62 and 66 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"62","b":"66","msg":"Co-surgeon and team surgery conflict"}},{"id":"M017","cat":"Modifier","sev":"error","name":"Modifiers 59 and XE cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"59","b":"XE","msg":"X modifiers replace modifier 59; do not use both"}},{"id":"M018","cat":"Modifier","sev":"error","name":"Modifiers 59 and XP cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"59","b":"XP","msg":"X modifiers replace modifier 59; do not use both"}},{"id":"M019","cat":"Modifier","sev":"error","name":"Modifiers 59 and XS cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"59","b":"XS","msg":"X modifiers replace modifier 59; do not use both"}},{"id":"M020","cat":"Modifier","sev":"error","name":"Modifiers 59 and XU cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"59","b":"XU","msg":"X modifiers replace modifier 59; do not use both"}},{"id":"M021","cat":"Modifier","sev":"error","name":"Modifiers GP and GO cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"GP","b":"GO","msg":"Only one therapy discipline modifier is allowed"}},{"id":"M022","cat":"Modifier","sev":"error","name":"Modifiers GP and GN cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"GP","b":"GN","msg":"Only one therapy discipline modifier is allowed"}},{"id":"M023","cat":"Modifier","sev":"error","name":"Modifiers GO and GN cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"GO","b":"GN","msg":"Only one therapy discipline modifier is allowed"}},{"id":"M024","cat":"Modifier","sev":"error","name":"Modifiers RR and NU cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"RR","b":"NU","msg":"Rental and new purchase conflict"}},{"id":"M025","cat":"Modifier","sev":"error","name":"Modifiers RR and UE cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"RR","b":"UE","msg":"Rental and used purchase conflict"}},{"id":"M026","cat":"Modifier","sev":"error","name":"Modifiers NU and UE cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"NU","b":"UE","msg":"New and used purchase conflict"}},{"id":"M027","cat":"Modifier","sev":"error","name":"Modifiers QZ and QK cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"QZ","b":"QK","msg":"Anesthesia direction modifiers conflict"}},{"id":"M028","cat":"Modifier","sev":"error","name":"Modifiers AA and QZ cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"AA","b":"QZ","msg":"Anesthesia personally performed and CRNA without direction conflict"}},{"id":"M029","cat":"Modifier","sev":"warning","name":"Modifiers 24 and 25 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"24","b":"25","msg":"Both E/M modifiers on one line is contradictory"}},{"id":"M030","cat":"Modifier","sev":"error","name":"Modifiers 93 and 95 cannot be billed together","src":"AMA CPT Appendix A (modifiers)","t":"mod_pair","p":{"a":"93","b":"95","msg":"Audio-only and audio-video telehealth modifiers conflict"}},{"id":"M031","cat":"Modifier","sev":"error","name":"Bilateral modifier 50 billed with more than one unit","src":"CMS Claims Processing Manual, Ch. 12","t":"mod_units","p":{"mod":"50","max":1}},{"id":"M032","cat":"Modifier","sev":"warning","name":"At most one anesthesia physical status modifier is allowed","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"mod_at_most_one","p":{"set":["P1","P2","P3","P4","P5","P6"],"label":"physical status"}},{"id":"M033","cat":"Modifier","sev":"warning","name":"At most one anesthesia direction modifier is allowed","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"mod_at_most_one","p":{"set":["AA","AD","QK","QX","QY","QZ"],"label":"anesthesia direction"}},{"id":"M034","cat":"Modifier","sev":"warning","name":"At most one therapy discipline modifier is allowed","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"mod_at_most_one","p":{"set":["GP","GO","GN"],"label":"therapy discipline"}},{"id":"M035","cat":"Modifier","sev":"warning","name":"At most one DME purchase or rental modifier is allowed","src":"CMS Claims Processing Manual, Ch. 20 (DME)","t":"mod_at_most_one","p":{"set":["RR","NU","UE"],"label":"DME acquisition"}},{"id":"M036","cat":"Modifier","sev":"warning","name":"Assistant modifier CQ or CO requires the therapy discipline modifier","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"mod_requires_any","p":{"mod":"CQ","any":["GP"]}},{"id":"M037","cat":"Modifier","sev":"warning","name":"Assistant modifier CO requires the occupational therapy modifier","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"mod_requires_any","p":{"mod":"CO","any":["GO"]}},{"id":"M038","cat":"Modifier","sev":"info","name":"Modifier GY marks a statutorily excluded service","src":"CMS Claims Processing Manual, Ch. 30 (ABN)","t":"mod_advisory","p":{"mod":"GY","msg":"The denial can be billed to the patient. Confirm this is intended."}},{"id":"M039","cat":"Modifier","sev":"warning","name":"Modifier GZ signals no ABN was obtained","src":"CMS Claims Processing Manual, Ch. 30 (ABN)","t":"mod_advisory_warn","p":{"mod":"GZ","msg":"Expect a denial with no patient liability. Obtain an ABN and use GA instead."}},{"id":"M040","cat":"Modifier","sev":"info","name":"Modifier GA asserts an ABN is on file","src":"CMS Claims Processing Manual, Ch. 30 (ABN)","t":"mod_advisory","p":{"mod":"GA","msg":"Keep the signed ABN available for audit."}},{"id":"M041","cat":"Modifier","sev":"info","name":"Modifier KX asserts coverage criteria are met","src":"CMS Claims Processing Manual, Ch. 20 (DME)","t":"mod_advisory","p":{"mod":"KX","msg":"Documentation must support the coverage criteria you are attesting to."}},{"id":"M042","cat":"Modifier","sev":"info","name":"Modifier 91 is for a repeat clinical laboratory test","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"91","msg":"Do not use 91 for equipment error or specimen re-run."}},{"id":"M043","cat":"Modifier","sev":"info","name":"Modifier 90 indicates a reference (outside) laboratory","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"90","msg":"Use when the test was sent to an outside laboratory."}},{"id":"M044","cat":"Modifier","sev":"info","name":"Modifier 99 signals multiple modifiers","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"99","msg":"Some payers require the remaining modifiers in a narrative segment."}},{"id":"M045","cat":"Modifier","sev":"warning","name":"Modifier 47 cannot be applied to an anesthesia code","src":"AMA CPT Appendix A (modifiers)","t":"mod47_anesthesia","p":{}},{"id":"M046","cat":"Modifier","sev":"info","name":"Locum tenens or reciprocal billing modifier applied","src":"CMS Claims Processing Manual, Ch. 12","t":"mod_advisory","p":{"mod":"Q6","msg":"Locum tenens arrangements have day limits. Track the 60-day continuous period."}},{"id":"M047","cat":"Modifier","sev":"info","name":"Modifier Q5 indicates a reciprocal billing arrangement","src":"CMS Claims Processing Manual, Ch. 12","t":"mod_advisory","p":{"mod":"Q5","msg":"Reciprocal billing has day limits. Track the continuous period."}},{"id":"M048","cat":"Modifier","sev":"info","name":"Modifier AI identifies the principal physician of record","src":"AMA CPT Appendix A (modifiers)","t":"mod_advisory","p":{"mod":"AI","msg":"Only the admitting physician of record should append AI."}},{"id":"M049","cat":"Modifier","sev":"warning","name":"Ambulatory surgical center modifier SG is generally retired for Medicare","src":"CMS Claims Processing Manual, Ch. 12","t":"mod_advisory_warn","p":{"mod":"SG","msg":"Medicare no longer requires SG. Confirm the payer still accepts it."}},{"id":"M050","cat":"Modifier","sev":"warning","name":"Modifier 26 applied to a code with no professional component","src":"CMS Claims Processing Manual, Ch. 12","t":"mod26_verify","p":{},"req":"mpfs"},{"id":"M051","cat":"Modifier","sev":"warning","name":"Anatomic modifier is required on this line","src":"AMA CPT Appendix A (modifiers)","t":"anatomic_required","p":{},"req":"ref"},{"id":"M052","cat":"Modifier","sev":"warning","name":"Eyelid modifier used on a non-eyelid procedure","src":"AMA CPT Appendix A (modifiers)","t":"mod_set_context","p":{"mods":["E1","E2","E3","E4"],"label":"eyelid"}},{"id":"M053","cat":"Modifier","sev":"warning","name":"Finger modifier used on a non-finger procedure","src":"AMA CPT Appendix A (modifiers)","t":"mod_set_context","p":{"mods":["FA","F1","F2","F3","F4","F5","F6","F7","F8","F9"],"label":"finger"}},{"id":"M054","cat":"Modifier","sev":"warning","name":"Toe modifier used on a non-toe procedure","src":"AMA CPT Appendix A (modifiers)","t":"mod_set_context","p":{"mods":["TA","T1","T2","T3","T4","T5","T6","T7","T8","T9"],"label":"toe"}},{"id":"M055","cat":"Modifier","sev":"warning","name":"Coronary artery modifier used on a non-coronary procedure","src":"AMA CPT Appendix A (modifiers)","t":"mod_set_context","p":{"mods":["LC","LD","RC","LM","RI"],"label":"coronary artery"}},{"id":"N001","cat":"Drug","sev":"warning","name":"Drug code billed without an NDC","src":"CMS 11-digit NDC (5-4-2) requirements","t":"ndc_required","p":{}},{"id":"N002","cat":"Drug","sev":"error","name":"NDC is not an 11-digit value","src":"CMS 11-digit NDC (5-4-2) requirements","t":"ndc_format","p":{}},{"id":"N003","cat":"Drug","sev":"error","name":"NDC quantity is missing or zero","src":"CMS 11-digit NDC (5-4-2) requirements","t":"ndc_qty","p":{}},{"id":"N004","cat":"Drug","sev":"error","name":"NDC unit of measure is not a valid code","src":"CMS 11-digit NDC (5-4-2) requirements","t":"ndc_unit","p":{}},{"id":"N005","cat":"Drug","sev":"warning","name":"Single-dose drug billed without JW or JZ","src":"CMS Claims Processing Manual, Ch. 12","t":"jw_jz","p":{}},{"id":"N006","cat":"Drug","sev":"warning","name":"Drug wastage modifier JW without a wastage quantity","src":"CMS Claims Processing Manual, Ch. 12","t":"jw_qty","p":{}},{"id":"N007","cat":"Drug","sev":"warning","name":"Unclassified drug code requires the drug name and dosage","src":"AMA CPT coding guidelines","t":"unclassified_drug","p":{}},{"id":"N008","cat":"Drug","sev":"warning","name":"Compound drug billed without all component NDCs","src":"CMS 11-digit NDC (5-4-2) requirements","t":"compound_ndc","p":{}},{"id":"N009","cat":"Drug","sev":"warning","name":"Immunization administration billed without a vaccine product code","src":"AMA CPT coding guidelines","t":"vaccine_pair","p":{}},{"id":"N010","cat":"Drug","sev":"warning","name":"Vaccine product billed without an administration code","src":"AMA CPT coding guidelines","t":"vaccine_admin","p":{}},{"id":"L001","cat":"Laboratory","sev":"warning","name":"Laboratory service without a CLIA certificate number","src":"CLIA, 42 CFR 493","t":"clia_required","p":{}},{"id":"L002","cat":"Laboratory","sev":"error","name":"CLIA certificate number is not 10 characters","src":"CLIA, 42 CFR 493","t":"clia_format","p":{}},{"id":"L003","cat":"Laboratory","sev":"warning","name":"CLIA-waived test billed without modifier QW","src":"CLIA, 42 CFR 493","t":"qw_required","p":{},"req":"ref"},{"id":"L004","cat":"Laboratory","sev":"warning","name":"Repeat laboratory test without modifier 91","src":"AMA CPT Appendix A (modifiers)","t":"lab_repeat_91","p":{}},{"id":"L005","cat":"Laboratory","sev":"warning","name":"Venipuncture billed more than once on the same date","src":"CMS NCCI Policy Manual","t":"venipuncture_units","p":{}},{"id":"L006","cat":"Laboratory","sev":"info","name":"Reference laboratory billing requires modifier 90","src":"AMA CPT Appendix A (modifiers)","t":"lab_reference","p":{}},{"id":"F001","cat":"Place of service","sev":"error","name":"Place of service is missing or not a recognized code","src":"CMS Place of Service code set","t":"pos_valid","p":{}},{"id":"F002","cat":"Place of service","sev":"warning","name":"Service facility location missing for a non-office place of service","src":"X12 005010X222A1 (837P)","t":"pos_facility","p":{}},{"id":"F003","cat":"Place of service","sev":"warning","name":"Office E/M billed with an inpatient place of service","src":"AMA CPT coding guidelines","t":"em_pos","p":{"set":"OFFICE_EM","bad":["21","22","23","51","61"]}},{"id":"F004","cat":"Place of service","sev":"warning","name":"Inpatient E/M billed with an office place of service","src":"AMA CPT coding guidelines","t":"em_pos","p":{"set":"INPATIENT_EM","bad":["11"]}},{"id":"F005","cat":"Place of service","sev":"warning","name":"Emergency department E/M billed outside an emergency department","src":"AMA CPT coding guidelines","t":"em_pos","p":{"set":"ED_EM","bad":["11","12","21","31","32"]}},{"id":"F006","cat":"Place of service","sev":"warning","name":"Nursing facility E/M billed outside a nursing facility","src":"AMA CPT coding guidelines","t":"em_pos","p":{"set":"SNF_EM","bad":["11","21","22","23"]}},{"id":"F007","cat":"Place of service","sev":"warning","name":"Home visit E/M billed outside the home","src":"AMA CPT coding guidelines","t":"em_pos","p":{"set":"HOME_EM","bad":["11","21","22","23"]}},{"id":"F008","cat":"Place of service","sev":"warning","name":"Telehealth place of service without an approved telehealth modifier","src":"CMS telehealth billing guidance","t":"pos_needs_mod","p":{"pos":["02","10"],"any":["93","95","GT","FQ"]}},{"id":"F009","cat":"Place of service","sev":"warning","name":"Telehealth modifier used without a telehealth place of service","src":"CMS telehealth billing guidance","t":"mod_needs_pos","p":{"mods":["93","95","GT"],"pos":["02","10"]}},{"id":"F010","cat":"Place of service","sev":"warning","name":"Facility place of service billed with a non-facility fee schedule expectation","src":"CMS Claims Processing Manual, Ch. 12","t":"pos_facility_pe","p":{},"req":"mpfs"},{"id":"F011","cat":"Place of service","sev":"error","name":"Place of service on the line conflicts with the claim level","src":"X12 005010X222A1 (837P)","t":"pos_line_conflict","p":{}},{"id":"F012","cat":"Place of service","sev":"warning","name":"Ambulance service billed without a transport place of service","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_pos","p":{}},{"id":"T001","cat":"Dates","sev":"error","name":"Date of service is in the future","src":"X12 005010X222A1 (837P)","t":"dos_future","p":{}},{"id":"T002","cat":"Dates","sev":"error","name":"Date of service precedes the date of birth","src":"X12 005010X222A1 (837P)","t":"dos_before_dob","p":{}},{"id":"T003","cat":"Dates","sev":"error","name":"Accident indicator set without an accident date","src":"X12 005010X222A1 (837P)","t":"accident_date","p":{}},{"id":"T004","cat":"Dates","sev":"error","name":"Accident date is after the date of service","src":"X12 005010X222A1 (837P)","t":"accident_after_dos","p":{}},{"id":"T005","cat":"Dates","sev":"error","name":"Timely filing window has already expired","src":"Payer filing limits; 42 CFR 424.44 (Medicare)","t":"tfl_expired","p":{}},{"id":"T006","cat":"Dates","sev":"warning","name":"Timely filing deadline is within 15 days","src":"Payer filing limits; 42 CFR 424.44 (Medicare)","t":"tfl_near","p":{}},{"id":"T007","cat":"Dates","sev":"error","name":"Line date of service falls outside the claim statement dates","src":"X12 005010X222A1 (837P)","t":"dos_outside_stmt","p":{}},{"id":"T008","cat":"Dates","sev":"error","name":"Admission date is after the date of service","src":"X12 005010X223A2 (837I)","t":"admit_after_dos","p":{}},{"id":"T009","cat":"Dates","sev":"error","name":"Discharge date precedes the admission date","src":"X12 005010X223A2 (837I)","t":"discharge_before_admit","p":{}},{"id":"T010","cat":"Dates","sev":"warning","name":"Initial treatment date missing for a service that requires it","src":"CMS Claims Processing Manual, Ch. 12","t":"onset_required","p":{}},{"id":"Z001","cat":"Financial","sev":"error","name":"Claim total does not equal the sum of line charges","src":"X12 005010X222A1 (837P)","t":"sum_match","p":{}},{"id":"Z002","cat":"Financial","sev":"error","name":"Patient paid amount exceeds the claim total charge","src":"X12 005010X222A1 (837P)","t":"patient_paid","p":{}},{"id":"Z003","cat":"Financial","sev":"warning","name":"Line charge is unusually high for the units billed","src":"AMA CPT coding guidelines","t":"charge_per_unit","p":{}},{"id":"Z004","cat":"Financial","sev":"error","name":"Negative amount reported on the claim","src":"X12 005010X222A1 (837P)","t":"negative_amount","p":{}},{"id":"A001","cat":"Authorization","sev":"warning","name":"Procedure commonly requiring prior authorization has no authorization number","src":"Payer prior authorization policies","t":"auth_required","p":{}},{"id":"A002","cat":"Authorization","sev":"warning","name":"Referral number missing for a service that typically requires a referral","src":"Payer referral policies","t":"referral_required","p":{},"req":"ref"},{"id":"A003","cat":"Authorization","sev":"error","name":"Authorization number reported in an invalid format","src":"X12 005010X222A1 (837P)","t":"auth_format","p":{}},{"id":"MC01","cat":"Medicare","sev":"warning","name":"Ordering or referring provider missing on a service that requires one","src":"CMS ordering and referring requirements","t":"medicare_ordering","p":{}},{"id":"MC02","cat":"Medicare","sev":"warning","name":"Diagnostic test billed without the ordering provider","src":"CMS ordering and referring requirements","t":"diag_ordering","p":{}},{"id":"MC03","cat":"Medicare","sev":"warning","name":"Purchased diagnostic service missing the performing provider details","src":"CMS Claims Processing Manual, Ch. 12","t":"purchased_diag","p":{},"req":"ref"},{"id":"MC04","cat":"Medicare","sev":"warning","name":"Advance beneficiary notice modifier expected on a potentially non-covered service","src":"CMS Claims Processing Manual, Ch. 30 (ABN)","t":"abn_expected","p":{},"req":"ref"},{"id":"MC05","cat":"Medicare","sev":"warning","name":"Preventive service billed outside its allowed frequency","src":"CMS Claims Processing Manual, Ch. 12","t":"preventive_frequency","p":{},"req":"history"},{"id":"MC06","cat":"Medicare","sev":"warning","name":"Screening service billed with a diagnostic diagnosis","src":"AMA CPT coding guidelines","t":"screening_dx","p":{}},{"id":"MC07","cat":"Medicare","sev":"warning","name":"Annual wellness visit billed with a problem-oriented E/M and no modifier 25","src":"CMS NCCI Policy Manual","t":"awv_em","p":{}},{"id":"MC08","cat":"Medicare","sev":"warning","name":"Therapy threshold exceeded without modifier KX","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"therapy_kx","p":{},"req":"history"},{"id":"I001","cat":"Institutional","sev":"error","name":"Revenue code is not a 4-digit value","src":"X12 005010X223A2 (837I)","t":"rev_format","p":{}},{"id":"I002","cat":"Institutional","sev":"error","name":"Revenue code requires an accompanying HCPCS code","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"rev_needs_hcpcs","p":{}},{"id":"I003","cat":"Institutional","sev":"error","name":"Drug revenue code requires an NDC","src":"CMS 11-digit NDC (5-4-2) requirements","t":"rev_needs_ndc","p":{}},{"id":"I004","cat":"Institutional","sev":"error","name":"Type of bill is not a valid 3-character value","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"billtype_format","p":{}},{"id":"I005","cat":"Institutional","sev":"error","name":"Inpatient claim has no admission date","src":"X12 005010X223A2 (837I)","t":"inpatient_admit","p":{}},{"id":"I006","cat":"Institutional","sev":"error","name":"Inpatient claim has no patient discharge status","src":"X12 005010X223A2 (837I)","t":"discharge_status","p":{}},{"id":"I007","cat":"Institutional","sev":"warning","name":"Inpatient claim has no DRG reported","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"drg_missing","p":{}},{"id":"I008","cat":"Institutional","sev":"error","name":"Room and board units do not match the length of stay","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"rb_units","p":{}},{"id":"I009","cat":"Institutional","sev":"warning","name":"Observation revenue code billed without hourly units","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"observation_units","p":{}},{"id":"I010","cat":"Institutional","sev":"error","name":"Emergency department revenue code requires a HCPCS code","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"ed_hcpcs","p":{}},{"id":"I011","cat":"Institutional","sev":"warning","name":"Operating room revenue code billed without a surgical procedure","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"or_procedure","p":{}},{"id":"I012","cat":"Institutional","sev":"error","name":"Statement covers period is missing on an institutional claim","src":"X12 005010X223A2 (837I)","t":"stmt_required","p":{}},{"id":"I013","cat":"Institutional","sev":"warning","name":"Occurrence span code reported without dates","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"occurrence_span","p":{}},{"id":"I014","cat":"Institutional","sev":"warning","name":"Value code reported without an amount","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"value_code_amt","p":{}},{"id":"I015","cat":"Institutional","sev":"warning","name":"Condition code reported in an invalid format","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"condition_code","p":{}},{"id":"I016","cat":"Institutional","sev":"error","name":"Attending provider missing on an institutional claim","src":"X12 005010X223A2 (837I)","t":"attending_required","p":{}},{"id":"I017","cat":"Institutional","sev":"error","name":"Attending provider NPI fails the check digit","src":"NPPES NPI standard (Luhn, 80840 prefix)","t":"npi","p":{"get":"attending.npi","who":"Attending provider"}},{"id":"I018","cat":"Institutional","sev":"warning","name":"Outpatient claim reports a DRG","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"outpatient_drg","p":{}},{"id":"I019","cat":"Institutional","sev":"warning","name":"Non-covered charges reported without a condition or occurrence code","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"noncovered_reason","p":{}},{"id":"I020","cat":"Institutional","sev":"warning","name":"Principal procedure code reported on an outpatient claim","src":"CMS Claims Processing Manual, Ch. 25 (837I)","t":"outpatient_icd_pcs","p":{}},{"id":"X001","cat":"Anesthesia","sev":"warning","name":"Anesthesia code without a physical status modifier","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"anesthesia_pstatus","p":{}},{"id":"X002","cat":"Anesthesia","sev":"warning","name":"Anesthesia code without a medical direction modifier","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"anesthesia_direction","p":{}},{"id":"X003","cat":"Anesthesia","sev":"error","name":"Anesthesia time units are missing","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"anesthesia_time","p":{}},{"id":"X004","cat":"Anesthesia","sev":"warning","name":"Anesthesia billed with minutes reported as units","src":"AMA CPT anesthesia guidelines / CMS anesthesia billing","t":"anesthesia_units_sanity","p":{}},{"id":"X005","cat":"Anesthesia","sev":"warning","name":"Qualifying circumstances code billed alone","src":"AMA CPT coding guidelines","t":"anesthesia_qualifying","p":{}},{"id":"X006","cat":"Ambulance","sev":"error","name":"Ambulance transport without an origin and destination modifier","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_od","p":{}},{"id":"X007","cat":"Ambulance","sev":"error","name":"Ambulance origin or destination character is not valid","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_od_chars","p":{}},{"id":"X008","cat":"Ambulance","sev":"error","name":"Ambulance mileage billed with zero units","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_mileage","p":{}},{"id":"X009","cat":"Ambulance","sev":"warning","name":"Ambulance mileage billed without a base transport code","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_base","p":{}},{"id":"X010","cat":"Ambulance","sev":"warning","name":"Ambulance claim without a pickup location","src":"CMS Claims Processing Manual, Ch. 15 (ambulance)","t":"ambulance_pickup","p":{}},{"id":"X011","cat":"DME","sev":"warning","name":"Durable medical equipment billed without a rental or purchase modifier","src":"CMS Claims Processing Manual, Ch. 20 (DME)","t":"dme_rr_nu_ue","p":{}},{"id":"X012","cat":"DME","sev":"warning","name":"Durable medical equipment billed without a laterality modifier","src":"CMS Claims Processing Manual, Ch. 20 (DME)","t":"dme_laterality","p":{}},{"id":"X013","cat":"DME","sev":"warning","name":"Capped rental item billed beyond the rental cap","src":"CMS Claims Processing Manual, Ch. 20 (DME)","t":"dme_rental_cap","p":{},"req":"history"},{"id":"X014","cat":"Therapy","sev":"warning","name":"Therapy service billed without a discipline modifier","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"therapy_discipline","p":{}},{"id":"X015","cat":"Therapy","sev":"warning","name":"Therapy assistant modifier without the discipline modifier","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"therapy_assistant","p":{}},{"id":"X016","cat":"Therapy","sev":"warning","name":"Timed therapy code billed with implausible units","src":"CMS therapy services billing (GP/GO/GN, KX)","t":"therapy_units","p":{}},{"id":"X017","cat":"Obstetrics","sev":"warning","name":"Antepartum care code billed with fewer than four visits","src":"AMA CPT maternity care and delivery guidelines","t":"ob_antepartum","p":{},"req":"history"},{"id":"X018","cat":"Obstetrics","sev":"warning","name":"Delivery code billed without a postpartum or global code","src":"AMA CPT maternity care and delivery guidelines","t":"ob_delivery","p":{}},{"id":"X019","cat":"Pediatrics","sev":"error","name":"Newborn care billed for a patient over 28 days old","src":"AMA CPT coding guidelines","t":"newborn_age2","p":{}},{"id":"X020","cat":"Pediatrics","sev":"warning","name":"Neonatal critical care billed outside the neonatal age range","src":"AMA CPT coding guidelines","t":"neonatal_age","p":{}},{"id":"X021","cat":"Behavioral","sev":"warning","name":"Psychotherapy add-on billed without an E/M service","src":"AMA CPT coding guidelines","t":"psych_addon","p":{}},{"id":"X022","cat":"Behavioral","sev":"warning","name":"Psychotherapy time-based code billed with multiple units","src":"AMA CPT coding guidelines","t":"psych_units","p":{}},{"id":"X023","cat":"Radiology","sev":"warning","name":"Radiology code billed without a professional or technical modifier in a facility setting","src":"CMS Claims Processing Manual, Ch. 12","t":"rad_component","p":{},"req":"mpfs"},{"id":"X024","cat":"Radiology","sev":"warning","name":"Contrast study billed without a contrast agent code","src":"AMA CPT coding guidelines","t":"rad_contrast","p":{}},{"id":"X025","cat":"Surgery","sev":"warning","name":"Multiple surgical procedures billed without modifier 51","src":"AMA CPT Appendix A (modifiers)","t":"surg_multiple_51","p":{}},{"id":"X026","cat":"Surgery","sev":"warning","name":"Co-surgeon modifier requires both surgeons to report the same code","src":"AMA CPT Appendix A (modifiers)","t":"cosurgeon_62","p":{}},{"id":"X027","cat":"Vision","sev":"warning","name":"Eye examination billed with a medical diagnosis and a routine code","src":"AMA CPT coding guidelines","t":"vision_routine","p":{}},{"id":"X028","cat":"Chiropractic","sev":"warning","name":"Chiropractic manipulation billed without an initial treatment date","src":"CMS Claims Processing Manual, Ch. 12","t":"chiro_onset","p":{}},{"id":"X029","cat":"Chiropractic","sev":"warning","name":"Chiropractic service billed without the AT modifier for active treatment","src":"CMS Claims Processing Manual, Ch. 12","t":"chiro_at","p":{}},{"id":"X030","cat":"Wound care","sev":"warning","name":"Debridement add-on billed without the base debridement code","src":"CMS NCCI Policy Manual","t":"debride_addon","p":{}},{"id":"X031","cat":"Dialysis","sev":"warning","name":"Dialysis service billed without the monthly capitation structure","src":"CMS Claims Processing Manual, Ch. 12","t":"dialysis_mcp","p":{},"req":"history"},{"id":"X032","cat":"Oncology","sev":"warning","name":"Chemotherapy administration billed without a drug code","src":"AMA CPT coding guidelines","t":"chemo_drug","p":{}},{"id":"X033","cat":"Oncology","sev":"warning","name":"Chemotherapy drug billed without an administration code","src":"AMA CPT coding guidelines","t":"chemo_admin","p":{}},{"id":"X034","cat":"Immunization","sev":"warning","name":"Vaccine counseling billed without a vaccine product","src":"AMA CPT coding guidelines","t":"vaccine_counsel","p":{}}]</script>
+<script>
+/* ================================================================
+   Fix Your RCM - Claim Scrubber engine
+   (c) 2026 Merwin David. All rights reserved.
+
+   Original work. Rules are derived from published US standards
+   (X12 TR3 implementation guides, CMS NCCI, CMS Claims Processing
+   Manual, AMA CPT conventions, ICD-10-CM guidelines, 42 CFR).
+   No payer's proprietary edit list is reproduced.
+   ================================================================ */
+
+/* ---------------- reference sets ---------------- */
+const OFFICE_EM=['99202','99203','99204','99205','99211','99212','99213','99214','99215'];
+const INPATIENT_EM=['99221','99222','99223','99231','99232','99233','99238','99239'];
+const ED_EM=['99281','99282','99283','99284','99285'];
+const SNF_EM=['99304','99305','99306','99307','99308','99309','99310','99315','99316'];
+const HOME_EM=['99341','99342','99344','99345','99347','99348','99349','99350'];
+const EM_SETS={OFFICE_EM,INPATIENT_EM,ED_EM,SNF_EM,HOME_EM};
+const EM_ALL=[].concat(OFFICE_EM,INPATIENT_EM,ED_EM,SNF_EM,HOME_EM);
+
+const PREV_NEW={'99381':[0,0],'99382':[1,4],'99383':[5,11],'99384':[12,17],'99385':[18,39],'99386':[40,64],'99387':[65,200]};
+const PREV_EST={'99391':[0,0],'99392':[1,4],'99393':[5,11],'99394':[12,17],'99395':[18,39],'99396':[40,64],'99397':[65,200]};
+const NEWBORN=['99460','99461','99462','99463'];
+const NEONATAL_CC=['99468','99469','99477','99478','99479','99480'];
+
+const PANELS={
+  '80048':['82947','84520','82565','84295','84132','82435','82374','82310'],
+  '80053':['82947','84520','82565','84295','84132','82435','82374','82310','84155','82040','82247','84075','84450','84460'],
+  '80061':['82465','83718','84478'],
+  '85025':['85027','85004'],
+  '93000':['93005','93010'],
+  '80076':['82040','82247','84075','84155','84450','84460']
+};
+const ADDONS={
+  '99417':['99205','99215'],'90833':['992'],'90836':['992'],'90838':['992'],
+  '11045':['11042'],'11046':['11043'],'11047':['11044'],
+  '64636':['64635'],'96366':['96365'],'96375':['96374','96365','96413'],
+  '96361':['96360'],'01968':['01967'],'99292':['99291']
+};
+const ADDON_CODES=Object.keys(ADDONS);
+
+const FEMALE_CPT=['58100','58120','58150','58558','59400','59409','59410','59510','59610','57452','57454','57455','57456','57460','57461','56405','58661'];
+const MALE_CPT=['54150','54160','54405','55040','55250','55700','55866','54520'];
+const FEMALE_ICD=['O','Z34','Z3A','N80','N81','N83','N84','N85','N86','N87','N88','N89','N90','N91','N92','N93','N94','N95','N96','N97','N98','C53','C54','C55','C56'];
+const MALE_ICD=['N40','N41','N44','N45','N46','N47','N48','N49','N50','N51','C61','C62','C63'];
+
+const PHYS_STATUS=['P1','P2','P3','P4','P5','P6'];
+const ANES_DIRECTION=['AA','AD','QK','QX','QY','QZ'];
+const THERAPY_DISC=['GP','GO','GN'];
+const DME_ACQ=['RR','NU','UE'];
+const X_MODS=['59','XE','XP','XS','XU'];
+const TELEHEALTH_POS=['02','10'];
+const TELEHEALTH_MODS=['93','95','GT'];
+const VALID_POS=['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','31','32','33','34','41','42','49','50','51','52','53','54','55','56','57','58','60','61','62','65','66','71','72','81','99'];
+
+const AMB_BASE=['A0426','A0427','A0428','A0429','A0430','A0431','A0432','A0433','A0434'];
+const AMB_MILEAGE=['A0425','A0435','A0436'];
+const AMB_OD_CHARS='DEGHIJNPRSX';
+const THERAPY_TIMED=['97032','97033','97035','97110','97112','97113','97116','97124','97140','97530','97535','97542','97760','97761'];
+const CHIRO=['98940','98941','98942'];
+const VISION_ROUTINE=['92002','92004','92012','92014'];
+const VENIPUNCTURE=['36415','36416'];
+const VACCINE_ADMIN=['90460','90461','90471','90472','90473','90474'];
+const CHEMO_ADMIN=['96401','96402','96405','96406','96409','96411','96413','96415','96416','96417'];
+const PSYCH_ADDON=['90833','90836','90838'];
+const PSYCH_TIMED=['90832','90834','90837'];
+const UNLISTED=['99499','29999','64999','69399','76499','77299','78299','88099','90399','90749','96379','99199','20999','21899','22899','27599','30999','31599','33999','36299','38129','40799','43289','44238','47379','49329','58578','58999','60659','67299','92499','93799','95999','97039','97139','97799','99070'];
+const OB_GLOBAL=['59400','59510','59610','59618'];
+const OB_DELIVERY=['59409','59410','59514','59515','59612','59614','59620','59622'];
+const OB_ANTE=['59425','59426'];
+const DEBRIDE_ADDON={'11045':'11042','11046':'11043','11047':'11044'};
+const CONTRAST_AGENTS=['Q9958','Q9959','Q9960','Q9961','Q9962','Q9963','Q9964','Q9965','Q9966','Q9967','A9575','A9576','A9577','A9578','A9579'];
+const BILATERAL_INHERENT=['31231','30801','30802','92133','92134','92081','92082','92083'];
+const SCREENING_COLON=['G0105','G0121'];
+const DIAG_COLON=['45378','45380','45384','45385','45388'];
+const AUTH_CPT=['70450','70551','70553','72148','72110','73721','74177','27447','27130','29881','43239','45378','64483','62323','J0178','J1745','J9299'];
+const NEEDS_ORDERING=/^(7[0-9]{4}|8[0-9]{4}|G0[0-9]{3})$/;
+
+const MOD_CONTEXT={
+  eyelid:{mods:['E1','E2','E3','E4'],test:c=>/^67\d{3}$/.test(c)||(+c>=15820&&+c<=15823)},
+  finger:{mods:['FA','F1','F2','F3','F4','F5','F6','F7','F8','F9'],test:c=>/^26\d{3}$/.test(c)||(+c>=11719&&+c<=11765)},
+  toe:{mods:['TA','T1','T2','T3','T4','T5','T6','T7','T8','T9'],test:c=>/^28\d{3}$/.test(c)||(+c>=11719&&+c<=11765)},
+  'coronary artery':{mods:['LC','LD','RC','LM','RI'],test:c=>(+c>=92920&&+c<=92944)||(+c>=92973&&+c<=92998)||(+c>=33510&&+c<=33548)}
+};
+
+const REV_NEEDS_HCPCS=['0300','0301','0302','0305','0306','0307','0310','0311','0312','0320','0324','0350','0351','0352','0610','0611','0612','0636','0730','0762'];
+const REV_DRUG=['0636'];
+const REV_ROOM_BOARD=c=>/^0(1[0-9]{2}|2[0-1][0-9])$/.test(c);
+const REV_OR=c=>/^036[0-9]$/.test(c);
+
+const TFL=[
+  {k:['medicare','novitas','palmetto','noridian','cgs','wps','first coast'],days:365,label:'Medicare (12 months, 42 CFR 424.44)'},
+  {k:['unitedhealthcare','united healthcare','uhc','oxford','umr'],days:90,label:'UnitedHealthcare (commonly 90 days)'},
+  {k:['aetna'],days:120,label:'Aetna (commonly 120 days)'},
+  {k:['cigna'],days:90,label:'Cigna (commonly 90 days)'},
+  {k:['humana'],days:90,label:'Humana (commonly 90 days)'},
+  {k:['ambetter','centene','wellcare','fidelis'],days:180,label:'Ambetter / Centene (commonly 180 days)'},
+  {k:['tricare','champus'],days:365,label:'TRICARE (1 year)'},
+  {k:['emblem'],days:180,label:'EmblemHealth (180 days)'},
+  {k:['blue cross','blue shield','bcbs','anthem','elevance','highmark'],days:180,label:'Blue plans (varies by state)'},
+  {k:['medicaid','medi-cal'],days:180,label:'Medicaid (varies by state)'}
+];
+const NOT_UNSPECIFIED=['E089','E099','E109','E119','E139'];
+
+/* ---------------- helpers ---------------- */
+const RE={npi:/^\d{10}$/,icd10:/^[A-TV-Z][0-9][0-9A-Z][0-9A-Z]{0,4}$/,cpt:/^\d{5}$/,hcpcs:/^[A-V]\d{4}$/,
+  mod:/^[A-Z0-9]{2}$/,ndc11:/^\d{11}$/,d8:/^\d{8}$/,zip9:/^\d{9}$/,taxonomy:/^[0-9A-Z]{9}X$/,ein:/^\d{9}$/,
+  clia:/^[0-9]{2}D[0-9]{7}$/,rev:/^\d{4}$/,
+  mbi:/^[1-9][ACDEFGHJKMNPQRTUVWXY][ACDEFGHJKMNPQRTUVWXY0-9]\d[ACDEFGHJKMNPQRTUVWXY][ACDEFGHJKMNPQRTUVWXY0-9]\d[ACDEFGHJKMNPQRTUVWXY]{2}\d{2}$/,
+  hicn:/^\d{9}[A-Z][A-Z0-9]?$/};
+function npiValid(n){ if(!RE.npi.test(n)) return false;
+  const b='80840'+n.slice(0,9); let s=0,d=true;
+  for(let i=b.length-1;i>=0;i--){ let x=+b[i]; if(d){x*=2; if(x>9)x-=9;} s+=x; d=!d; }
+  return ((10-(s%10))%10)===+n[9]; }
+function isCode(c){ return RE.cpt.test(c)||RE.hcpcs.test(c); }
+function d8d(v){ if(!RE.d8.test(v)) return null; const y=+v.slice(0,4),m=+v.slice(4,6),dd=+v.slice(6,8);
+  const t=new Date(Date.UTC(y,m-1,dd)); return (t.getUTCMonth()===m-1&&t.getUTCDate()===dd)?t:null; }
+function ageAt(dob,dos){ const a=d8d(dob),b=d8d(dos); if(!a||!b) return null;
+  let y=b.getUTCFullYear()-a.getUTCFullYear(); const m=b.getUTCMonth()-a.getUTCMonth();
+  if(m<0||(m===0&&b.getUTCDate()<a.getUTCDate())) y--; return y; }
+function daysApart(a,b){ const x=d8d(a),y=d8d(b); if(!x||!y) return null; return Math.round((y-x)/86400000); }
+function daysSince(v){ const a=d8d(v); return a?Math.round((Date.now()-a.getTime())/86400000):null; }
+function get(o,path){ return path.split('.').reduce((a,k)=>(a==null?a:a[k]),o); }
+function num(c){ const n=parseInt(c,10); return isNaN(n)?-1:n; }
+const sub=(v,comp,i)=>(v==null?'':String(v).split(comp)[i]||'');
+
+/* ---------------- X12 parsing ---------------- */
+function parseX12(raw){
+  const txt=raw.replace(/\r?\n/g,'').trim();
+  const isa=txt.indexOf('ISA');
+  if(isa<0) throw new Error('No ISA header. This does not look like an X12 file.');
+  const el=txt[isa+3], comp=txt[isa+104], term=txt[isa+105];
+  const segs=txt.slice(isa).split(term).map(s=>s.trim()).filter(Boolean).map(s=>s.split(el));
+  return {segs,comp};
+}
+function stType(segs){ const st=segs.find(s=>s[0]==='ST'); return st?st[1]:null; }
+
+function parse837(segs,comp){
+  const claims=[]; let cur=null,line=null,loop='';
+  let ctx={billing:{},subscriber:{},payer:{},rendering:{},referring:{},facility:{},supervising:{},attending:{},sbr:{}};
+  const closeLine=()=>{ if(cur&&line){ cur.lines.push(line); line=null; } };
+  const push=()=>{ closeLine(); if(cur){ claims.push(cur); cur=null; } };
+  for(const s of segs){
+    const id=s[0];
+    if(id==='NM1'){
+      const ent=s[1], npi=(s[8]==='XX')?(s[9]||''):'';
+      loop=ent;
+      if(ent==='85') ctx.billing=Object.assign(ctx.billing,{name:s[3]||'',npi});
+      else if(ent==='IL') ctx.subscriber=Object.assign(ctx.subscriber,{last:s[3]||'',first:s[4]||'',memberId:(s[8]==='MI')?(s[9]||''):''});
+      else if(ent==='PR') ctx.payer={name:s[3]||'',id:s[9]||''};
+      else if(ent==='82') (cur||ctx).rendering={npi};
+      else if(ent==='DN'||ent==='P3') (cur||ctx).referring={npi};
+      else if(ent==='77') (cur||ctx).facility={npi};
+      else if(ent==='DQ') (cur||ctx).supervising={npi};
+      else if(ent==='71') (cur||ctx).attending={npi};
+    }
+    else if(id==='N3'){ if(loop==='85') ctx.billing.addr=s[1]||''; else if(loop==='77'&&cur) cur.facility.addr=s[1]||''; }
+    else if(id==='N4'){
+      const zip=(s[3]||'').replace(/-/g,'');
+      if(loop==='85') ctx.billing.zip=zip; else if(loop==='77'&&cur) cur.facility.zip=zip;
+    }
+    else if(id==='PRV'&&s[1]==='BI') ctx.billing.taxonomy=s[3]||'';
+    else if(id==='REF'&&!cur&&(s[1]==='EI'||s[1]==='SY')) ctx.billing.taxId=s[2]||'';
+    else if(id==='DMG'){ ctx.subscriber.dob=s[2]||''; ctx.subscriber.gender=(s[3]||'').toUpperCase(); }
+    else if(id==='SBR') ctx.sbr={resp:s[1]||'',rel:s[2]||''};
+    else if(id==='OI') ctx.oi=true;
+    else if(id==='CLM'){
+      push();
+      cur={type:'P',claimId:s[1]||'',totalCharge:parseFloat(s[2]||'0'),
+        pos:sub(s[5],comp,0),facilityType:sub(s[5],comp,0),freq:sub(s[5],comp,2),
+        accident:(s[11]||''),
+        billing:{...ctx.billing},subscriber:{...ctx.subscriber},payer:{...ctx.payer},sbr:{...ctx.sbr},
+        rendering:{...(ctx.rendering||{})},referring:{...(ctx.referring||{})},facility:{...(ctx.facility||{})},
+        supervising:{...(ctx.supervising||{})},attending:{...(ctx.attending||{})},
+        dxs:[],lines:[],refs:{},dates:{},amts:{},cas:false,casAmt:0,priorPaid:null,
+        drg:'',valueCodes:[],occurrence:[],occurrenceSpan:[],conditionCodes:[],principalProc:'',
+        dischargeStatus:'',admitType:''};
+    }
+    else if(id==='HI'&&cur){
+      for(let i=1;i<s.length;i++){
+        const q=sub(s[i],comp,0), c=sub(s[i],comp,1);
+        if(!c) continue;
+        if(/^(ABK|BK|ABF|BF)$/.test(q)) cur.dxs.push({qual:q,code:c.toUpperCase()});
+        else if(q==='DR') cur.drg=c;
+        else if(q==='BE') cur.valueCodes.push({code:c,amt:sub(s[i],comp,4)});
+        else if(q==='BH') cur.occurrence.push({code:c,date:sub(s[i],comp,3)});
+        else if(q==='BI') cur.occurrenceSpan.push({code:c,date:sub(s[i],comp,3)});
+        else if(q==='BG') cur.conditionCodes.push(c);
+        else if(q==='BBR'||q==='BR') cur.principalProc=c;
+      }
+    }
+    else if(id==='CL1'&&cur){ cur.admitType=s[1]||''; cur.dischargeStatus=s[3]||''; cur.type='I'; }
+    else if(id==='CAS'&&cur){ cur.cas=true; for(let i=3;i<s.length;i+=3){ const a=parseFloat(s[i]||'0'); if(!isNaN(a)) cur.casAmt+=a; } }
+    else if(id==='AMT'&&cur){ cur.amts[s[1]]=parseFloat(s[2]||'0'); if(s[1]==='D') cur.priorPaid=parseFloat(s[2]||'0'); }
+    else if(id==='REF'&&cur&&!line) cur.refs[s[1]]=s[2]||'';
+    else if(id==='DTP'&&cur&&!line){
+      const v=(s[3]||'');
+      if(s[1]==='434'){ cur.dates.stmtFrom=v.split('-')[0]; cur.dates.stmtTo=v.split('-')[1]||v.split('-')[0]; }
+      if(s[1]==='439') cur.dates.accident=v;
+      if(s[1]==='435') cur.dates.admission=v.slice(0,8);
+      if(s[1]==='096') cur.dates.discharge=v.slice(0,8);
+      if(s[1]==='454'||s[1]==='453') cur.dates.onset=v;
+    }
+    else if(id==='LX'&&cur){ closeLine(); line={lx:s[1]||'',mods:[],dxPtr:[],refs:{}}; }
+    else if(id==='SV1'&&cur&&line){
+      cur.type='P';
+      line.cpt=sub(s[1],comp,1).toUpperCase();
+      for(let i=2;i<=5;i++){ const m=sub(s[1],comp,i); if(m) line.mods.push(m.toUpperCase()); }
+      line.charge=parseFloat(s[2]||'0'); line.unitBasis=s[3]||''; line.units=parseFloat(s[4]||'0'); line.posLine=s[5]||'';
+      const dp=s[7]||''; if(dp) line.dxPtr=dp.split(comp).filter(Boolean).map(Number);
+    }
+    else if(id==='SV2'&&cur&&line){
+      cur.type='I';
+      line.rev=s[1]||'';
+      line.cpt=sub(s[2],comp,1).toUpperCase();
+      for(let i=2;i<=5;i++){ const m=sub(s[2],comp,i); if(m) line.mods.push(m.toUpperCase()); }
+      line.charge=parseFloat(s[3]||'0'); line.unitBasis=s[4]||''; line.units=parseFloat(s[5]||'0');
+    }
+    else if(id==='DTP'&&line&&s[1]==='472') line.dos=(s[3]||'').split('-')[0];
+    else if(id==='LIN'&&line&&s[2]==='N4') line.ndc=s[3]||'';
+    else if(id==='CTP'&&line){ line.ndcQty=parseFloat(s[4]||'0'); line.ndcUnit=sub(s[5],comp,0); }
+    else if(id==='REF'&&line) line.refs[s[1]]=s[2]||'';
+    else if(id==='SE') push();
+  }
+  push();
+  claims.forEach(c=>{ if(c.lines.some(l=>l.rev)) c.type='I'; });
+  return claims;
+}
+
+function parse835(segs){
+  const out={payer:'',claims:0,carc:{},total:0};
+  for(const s of segs){
+    if(s[0]==='N1'&&s[1]==='PR') out.payer=s[2]||'';
+    else if(s[0]==='CLP') out.claims++;
+    else if(s[0]==='CAS'){
+      const g=s[1]||'';
+      for(let i=2;i+1<s.length;i+=3){
+        const code=s[i], amt=parseFloat(s[i+1]||'0');
+        if(!code||isNaN(amt)) continue;
+        const k=g+'|'+code;
+        if(!out.carc[k]) out.carc[k]={group:g,code,count:0,amt:0};
+        out.carc[k].count++; out.carc[k].amt+=amt; out.total+=Math.abs(amt);
+      }
+    }
+  }
+  return out;
+}
+
+const CARC={
+  '16':['Claim lacks required information or has a submission error','S005, D001, P001'],
+  '18':['Exact duplicate of a claim or service already submitted','C006'],
+  '22':['Another payer is primary under coordination of benefits','B009, B012'],
+  '27':['Service happened after the coverage ended','Eligibility check (not scrubbable)'],
+  '29':['The filing deadline had already passed','T005, T006'],
+  '45':['Charge exceeds the contracted or fee schedule amount','Contract issue (not scrubbable)'],
+  '50':['Payer judged the service not medically necessary','Coverage policy (LCD/NCD) review'],
+  '96':['Service is not covered under this plan','M038'],
+  '97':['Payment is already included in another service on the claim','C007, C009'],
+  '109':['Wrong payer; send the claim elsewhere','B007'],
+  '119':['A benefit maximum has been reached','Eligibility check (not scrubbable)'],
+  '140':['Patient ID and name do not match the payer records','B001, B002'],
+  '151':['Payer says the documentation does not support this many services','C008'],
+  '181':['Procedure code was not valid on that date of service','C001'],
+  '182':['A modifier on the line was invalid','C003, M001'],
+  '183':['Referring provider is not eligible to refer this service','P005, MC01'],
+  '197':['Prior authorization or precertification was missing','A001'],
+  '198':['Prior authorization limits were exceeded','A001'],
+  '204':['Not covered under the patient current benefit plan','M038'],
+  '234':['This procedure is not paid separately','C009'],
+  '236':['Procedure combination is not allowed under NCCI rules','C007, C009'],
+  '252':['Additional documentation is required','Attachment workflow'],
+  'B7':['Provider was not certified or eligible for this service on that date','P003, MC01'],
+  'B15':['A required qualifying service was not billed','C010']
+};
+
+/* alias so the evaluator can reach the reference tables */
+const E={npiValid,isCode,d8d,ageAt,daysApart,daysSince,get,num,RE,parseX12,stType,parse837,parse835,
+ OFFICE_EM,INPATIENT_EM,ED_EM,SNF_EM,HOME_EM,EM_SETS,EM_ALL,PREV_NEW,PREV_EST,NEWBORN,NEONATAL_CC,
+ PANELS,ADDONS,ADDON_CODES,FEMALE_CPT,MALE_CPT,FEMALE_ICD,MALE_ICD,PHYS_STATUS,ANES_DIRECTION,
+ THERAPY_DISC,DME_ACQ,X_MODS,TELEHEALTH_POS,TELEHEALTH_MODS,VALID_POS,AMB_BASE,AMB_MILEAGE,AMB_OD_CHARS,
+ THERAPY_TIMED,CHIRO,VISION_ROUTINE,VENIPUNCTURE,VACCINE_ADMIN,CHEMO_ADMIN,PSYCH_ADDON,PSYCH_TIMED,
+ UNLISTED,OB_GLOBAL,OB_DELIVERY,OB_ANTE,DEBRIDE_ADDON,CONTRAST_AGENTS,BILATERAL_INHERENT,
+ SCREENING_COLON,DIAG_COLON,AUTH_CPT,NEEDS_ORDERING,MOD_CONTEXT,REV_NEEDS_HCPCS,REV_DRUG,
+ REV_ROOM_BOARD,REV_OR,TFL,NOT_UNSPECIFIED,CARC};
+
+/* Claim Scrubber - rule evaluators. (c) 2026 Merwin David. */
+
+function mk(state){
+  const F=[];
+  const add=(r,c,lineNo,msg,fix)=>{
+    if(state && state.enabled && state.enabled[r.id]===false) return;
+    F.push({file:(c&&c.__file)||'',claim:(c&&c.claimId)||'',line:lineNo||'',rule:r.id,
+      sev:r.sev,cat:r.cat,name:r.name,msg,fix:fix||'',src:r.src});
+  };
+  return {F,add};
+}
+
+/* ============ FILE-LEVEL ============ */
+const FILE_CHECKS={
+  env_isa_iea(r,segs,stub,add){ const a=segs.find(s=>s[0]==='ISA'),b=segs.find(s=>s[0]==='IEA');
+    if(a&&b&&a[13]&&b[2]&&a[13].trim()!==b[2].trim()) add(r,stub,'','ISA13 is '+a[13].trim()+' but IEA02 is '+b[2].trim(),'Match the interchange control numbers.'); },
+  env_gs_ge(r,segs,stub,add){ const a=segs.find(s=>s[0]==='GS'),b=segs.find(s=>s[0]==='GE');
+    if(a&&b&&a[6]&&b[2]&&a[6].trim()!==b[2].trim()) add(r,stub,'','GS06 is '+a[6].trim()+' but GE02 is '+b[2].trim(),'Match the group control numbers.'); },
+  env_st_se(r,segs,stub,add){ const a=segs.find(s=>s[0]==='ST'),b=segs.find(s=>s[0]==='SE');
+    if(a&&b&&a[2]&&b[2]&&a[2].trim()!==b[2].trim()) add(r,stub,'','ST02 is '+a[2].trim()+' but SE02 is '+b[2].trim(),'Match the transaction set control numbers.'); },
+  env_se_count(r,segs,stub,add){ const a=segs.find(s=>s[0]==='ST'),b=segs.find(s=>s[0]==='SE');
+    if(a&&b){ const i=segs.indexOf(a),j=segs.indexOf(b),actual=j-i+1,dec=parseInt(b[1]||'0',10);
+      if(dec&&actual!==dec) add(r,stub,'','SE01 declares '+dec+' segments; the file contains '+actual,'Recount segments from ST through SE inclusive.'); } },
+  env_bht(r,segs,stub,add){ if(!segs.find(s=>s[0]==='BHT')) add(r,stub,'','No BHT segment found','Add the BHT segment after ST.'); }
+};
+
+/* ============ CLAIM-LEVEL ============ */
+const C={};
+const isMedicare=c=>/medicare|novitas|palmetto|noridian|cgs |wps |first coast/.test((c.payer.name||'').toLowerCase());
+const codesOf=c=>c.lines.map(l=>l.cpt).filter(Boolean);
+const firstDos=c=>c.lines.map(l=>l.dos).filter(Boolean).sort()[0]||c.dates.stmtFrom;
+
+C.no_lines=(r,c,add)=>{ if(!c.lines.length) add(r,c,'','Claim has no service lines','Add at least one service line.'); };
+C.stmt_order=(r,c,add)=>{ const a=c.dates.stmtFrom,b=c.dates.stmtTo;
+  if(a&&b&&d8d(a)&&d8d(b)&&d8d(a)>d8d(b)) add(r,c,'','Statement period runs from '+a+' to '+b,'Correct the statement dates.'); };
+C.req=(r,c,add)=>{ const v=get(c,r.p.get); if(v==null||v==='') add(r,c,'',r.p.label+' is missing','Populate '+r.p.label+'.'); };
+C.freq_ref=(r,c,add)=>{ if((c.freq==='7'||c.freq==='8')&&!c.refs['F8'])
+  add(r,c,'','Claim frequency '+c.freq+' is a replacement or void but no original claim number is present','Add REF*F8 with the original payer claim number.'); };
+C.npi_len=(r,c,add)=>{ const v=get(c,r.p.get); if(v&&!RE.npi.test(v)) add(r,c,'',r.p.who+' NPI "'+v+'" is not 10 digits','Correct the NPI.'); };
+C.npi=(r,c,add)=>{ const v=get(c,r.p.get); if(v&&RE.npi.test(v)&&!npiValid(v)) add(r,c,'',r.p.who+' NPI '+v+' fails the Luhn check digit','Verify the NPI in NPPES.'); };
+C.taxonomy_fmt=(r,c,add)=>{ const t=c.billing.taxonomy; if(t&&!RE.taxonomy.test(t)) add(r,c,'','Taxonomy "'+t+'" is not 9 characters followed by X','Use a valid Health Care Provider Taxonomy code.'); };
+C.taxid_fmt=(r,c,add)=>{ const t=c.billing.taxId; if(t&&!RE.ein.test(t.replace(/-/g,''))) add(r,c,'','Tax ID "'+t+'" is not 9 digits','Correct the federal tax ID.'); };
+C.zip9=(r,c,add)=>{ const z=get(c,r.p.get); if(z&&!RE.zip9.test(z)) add(r,c,'',r.p.who+' ZIP "'+z+'" is not 9 digits','Medicare requires the full ZIP+4 without a hyphen.'); };
+C.pobox=(r,c,add)=>{ const a=(c.billing.addr||'').toLowerCase();
+  if(/p\.?\s?o\.?\s?box|post office box/.test(a)) add(r,c,'','Billing address "'+c.billing.addr+'" appears to be a PO Box','The billing provider address must be a physical street address.'); };
+C.rendering_no_npi=(r,c,add)=>{ if(c.rendering&&Object.prototype.hasOwnProperty.call(c.rendering,'npi')&&!c.rendering.npi)
+  add(r,c,'','A rendering provider loop is present but carries no NPI','Populate NM109 for the rendering provider.'); };
+C.mbi=(r,c,add)=>{ const id=c.subscriber.memberId;
+  if(isMedicare(c)&&id&&!RE.mbi.test(id)) add(r,c,'','Member ID "'+id+'" does not match the Medicare MBI format','MBI is 11 characters and excludes S, L, O, I, B and Z.'); };
+C.hicn=(r,c,add)=>{ const id=c.subscriber.memberId;
+  if(id&&RE.hicn.test(id)) add(r,c,'','Member ID "'+id+'" looks like a retired SSN-based Medicare number','Use the MBI. HICNs were retired in 2020.'); };
+C.dob_valid=(r,c,add)=>{ const d=c.subscriber.dob; if(!d||!d8d(d)) add(r,c,'','Subscriber date of birth is missing or not a valid date','Populate DMG02 as CCYYMMDD.'); };
+C.dob_future=(r,c,add)=>{ const d=c.subscriber.dob; if(d&&d8d(d)&&d8d(d).getTime()>Date.now()) add(r,c,'','Date of birth '+d+' is in the future','Correct the birth date.'); };
+C.age_absurd=(r,c,add)=>{ const d=c.subscriber.dob,s=firstDos(c);
+  if(d&&s){ const a=ageAt(d,s); if(a!==null&&a>120) add(r,c,'','Patient age computes to '+a+' years','Verify the birth date.'); } };
+C.gender_code=(r,c,add)=>{ if(!['M','F','U'].includes(c.subscriber.gender||'')) add(r,c,'','Gender code "'+(c.subscriber.gender||'')+'" is not M, F or U','Correct DMG03.'); };
+C.payer_present=(r,c,add)=>{ if(!c.payer.name&&!c.payer.id) add(r,c,'','Payer name and identifier are both absent','Populate the payer loop.'); };
+C.cob_cas=(r,c,add)=>{ if(c.sbr.resp&&c.sbr.resp!=='P'&&!c.cas) add(r,c,'','Claim is not primary but carries no prior payer adjustments','Add prior payer CAS detail.'); };
+C.cob_amt=(r,c,add)=>{ if(c.sbr.resp&&c.sbr.resp!=='P'&&c.priorPaid==null) add(r,c,'','Claim is not primary but reports no prior payer paid amount','Add AMT*D with the prior payer paid amount.'); };
+C.cob_balance=(r,c,add)=>{ if(c.priorPaid!=null&&c.cas){ const diff=c.totalCharge-(c.priorPaid+c.casAmt);
+  if(Math.abs(diff)>0.01) add(r,c,'','Charge '+c.totalCharge.toFixed(2)+' minus prior paid '+c.priorPaid.toFixed(2)+' and adjustments '+c.casAmt.toFixed(2)+' leaves '+diff.toFixed(2),'Prior payer paid plus adjustments should reconcile to the charge.'); } };
+C.medicare_primary=(r,c,add)=>{ if(isMedicare(c)&&c.sbr.resp==='P'&&c.oi===undefined) return;
+  if(isMedicare(c)&&c.sbr.resp&&c.sbr.resp!=='P'&&!c.cas)
+    add(r,c,'','Medicare appears primary but the claim is not submitted as primary','Submit to Medicare first, then send the secondary claim electronically.'); };
+C.dx_present=(r,c,add)=>{ if(!c.dxs.length) add(r,c,'','Claim carries no diagnosis code','Add at least a principal diagnosis.'); };
+C.dx_count=(r,c,add)=>{ if(c.dxs.length>r.p.max) add(r,c,'',c.dxs.length+' diagnoses present; the limit is '+r.p.max,'Remove the least relevant diagnoses.'); };
+C.dx_format=(r,c,add)=>{ c.dxs.forEach(d=>{ if(!RE.icd10.test(d.code)) add(r,c,'','Diagnosis "'+d.code+'" is not a valid ICD-10-CM format','Use a valid code without the decimal.'); }); };
+C.dx_dup=(r,c,add)=>{ const s={}; c.dxs.forEach(d=>{ if(s[d.code]) add(r,c,'','Diagnosis '+d.code+' appears more than once','Remove the duplicate.'); s[d.code]=1; }); };
+C.dx_gender=(r,c,add)=>{ const g=c.subscriber.gender;
+  c.dxs.forEach(d=>{
+    if(g==='M'&&E.FEMALE_ICD.some(p=>d.code.startsWith(p))) add(r,c,'','Diagnosis '+d.code+' is female-specific but the patient is male','Verify the diagnosis or the gender.');
+    if(g==='F'&&E.MALE_ICD.some(p=>d.code.startsWith(p))) add(r,c,'','Diagnosis '+d.code+' is male-specific but the patient is female','Verify the diagnosis or the gender.');
+  }); };
+C.dx_perinatal=(r,c,add)=>{ const s=firstDos(c); if(!c.subscriber.dob||!s) return;
+  const a=ageAt(c.subscriber.dob,s);
+  c.dxs.forEach(d=>{ if(d.code.startsWith('P')&&a!==null&&a>0) add(r,c,'','Perinatal diagnosis '+d.code+' with a patient aged '+a,'Perinatal codes describe conditions originating in the newborn period.'); }); };
+C.dx_unspec=(r,c,add)=>{ c.dxs.forEach(d=>{
+  if(d.code.length>=4&&d.code.endsWith('9')&&!E.NOT_UNSPECIFIED.includes(d.code))
+    add(r,c,'','Diagnosis '+d.code+' ends in 9, which is often the unspecified option','Confirm this is the most specific code the documentation supports.'); }); };
+C.dx_external_first=(r,c,add)=>{ const p=c.dxs.find(d=>/^(ABK|BK)$/.test(d.qual));
+  if(p&&/^[VWXY]/.test(p.code)) add(r,c,'','External cause code '+p.code+' is sequenced as the principal diagnosis','External cause codes are never reported first.'); };
+C.dx_trimester=(r,c,add)=>{ c.dxs.forEach(d=>{
+  if(/^O(09|1[0-6]|2[1-9]|3[0-6]|4[0-8])/.test(d.code)&&d.code.length>=5&&d.code.endsWith('0'))
+    add(r,c,'','Maternity diagnosis '+d.code+' ends in 0, which is often the unspecified trimester','Report the trimester when the documentation supports it.'); }); };
+C.dx_sequela=(r,c,add)=>{ c.dxs.forEach(d=>{
+  if(d.code.length===7&&d.code.endsWith('S'))
+    add(r,c,'','Diagnosis '+d.code+' carries the sequela 7th character','Sequence the residual condition first and the sequela code second.'); }); };
+C.sum_match=(r,c,add)=>{ if(!c.lines.length) return;
+  const s=c.lines.reduce((a,l)=>a+(isNaN(l.charge)?0:l.charge),0);
+  if(Math.abs(s-c.totalCharge)>0.01) add(r,c,'','Claim total is '+c.totalCharge.toFixed(2)+' but the lines sum to '+s.toFixed(2),'Correct the claim total or the line charges.'); };
+C.patient_paid=(r,c,add)=>{ const p=c.amts['F5'];
+  if(p!=null&&p>c.totalCharge+0.01) add(r,c,'','Patient paid '+p.toFixed(2)+' exceeds the claim total '+c.totalCharge.toFixed(2),'Correct the patient paid amount.'); };
+C.negative_amount=(r,c,add)=>{ if(c.totalCharge<0) add(r,c,'','Claim total charge is negative','Charges cannot be negative.'); };
+C.pos_valid=(r,c,add)=>{ if(c.type==='I') return;
+  if(!c.pos||!E.VALID_POS.includes(c.pos)) add(r,c,'','Place of service "'+(c.pos||'')+'" is missing or not a recognized code','Use a valid CMS place of service code.'); };
+C.pos_facility=(r,c,add)=>{ if(c.type==='I') return;
+  if(c.pos&&!['11','12'].includes(c.pos)&&!c.facility.npi)
+    add(r,c,'','Place of service '+c.pos+' is not an office but no service facility is reported','Add the service facility loop.'); };
+C.accident_date=(r,c,add)=>{ if(c.accident==='Y'&&!c.dates.accident) add(r,c,'','Accident flag is set but no accident date is present','Add the accident date.'); };
+C.accident_after_dos=(r,c,add)=>{ const s=firstDos(c),a=c.dates.accident;
+  if(a&&s&&d8d(a)&&d8d(s)&&d8d(a)>d8d(s)) add(r,c,'','Accident date '+a+' is after the date of service '+s,'Correct the accident date.'); };
+function tflFor(c){ const p=(c.payer.name||'').toLowerCase(); return E.TFL.find(t=>t.k.some(k=>p.includes(k))); }
+C.tfl_expired=(r,c,add)=>{ const t=tflFor(c),s=firstDos(c); if(!t||!s) return;
+  const d=daysSince(s); if(d!==null&&d>t.days) add(r,c,'','Date of service is '+d+' days old; '+t.label+' allows '+t.days,'This claim will likely deny for timely filing.'); };
+C.tfl_near=(r,c,add)=>{ const t=tflFor(c),s=firstDos(c); if(!t||!s) return;
+  const d=daysSince(s); if(d!==null&&t.days-d<=15&&t.days-d>=0) add(r,c,'','Only '+(t.days-d)+' days remain under '+t.label,'Submit immediately.'); };
+C.ob_global_conflict=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.OB_GLOBAL.includes(x))&&k.some(x=>E.OB_DELIVERY.includes(x)))
+    add(r,c,'','A global obstetric package and a delivery-only code are both billed','The global package already includes the delivery.'); };
+C.ob_global_ante=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.OB_GLOBAL.includes(x))&&k.some(x=>E.OB_ANTE.includes(x)))
+    add(r,c,'','A global obstetric package and antepartum care codes are both billed','The global package already includes antepartum care.'); };
+C.vaccine_pair=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.VACCINE_ADMIN.includes(x))&&!k.some(x=>num(x)>=90476&&num(x)<=90759))
+    add(r,c,'','Immunization administration billed with no vaccine product code','Bill the vaccine product alongside the administration.'); };
+C.vaccine_admin=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>num(x)>=90476&&num(x)<=90759)&&!k.some(x=>E.VACCINE_ADMIN.includes(x)))
+    add(r,c,'','Vaccine product billed with no administration code','Bill the administration code alongside the product.'); };
+C.vaccine_counsel=(r,c,add)=>{ const k=codesOf(c);
+  if((k.includes('90460')||k.includes('90461'))&&!k.some(x=>num(x)>=90476&&num(x)<=90759))
+    add(r,c,'','Vaccine counseling administration billed with no vaccine product','Report the vaccine product.'); };
+C.chemo_drug=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.CHEMO_ADMIN.includes(x))&&!k.some(x=>/^J9\d{3}$/.test(x)))
+    add(r,c,'','Chemotherapy administration billed with no chemotherapy drug code','Report the drug with its NDC.'); };
+C.chemo_admin=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>/^J9\d{3}$/.test(x))&&!k.some(x=>E.CHEMO_ADMIN.includes(x)))
+    add(r,c,'','Chemotherapy drug billed with no administration code','Report the administration service.'); };
+C.psych_addon=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.PSYCH_ADDON.includes(x))&&!k.some(x=>/^992\d{2}$/.test(x)))
+    add(r,c,'','Psychotherapy add-on billed with no evaluation and management service','Psychotherapy add-on codes are reported with an E/M service.'); };
+C.debride_addon=(r,c,add)=>{ const k=codesOf(c);
+  Object.keys(E.DEBRIDE_ADDON).forEach(a=>{ if(k.includes(a)&&!k.includes(E.DEBRIDE_ADDON[a]))
+    add(r,c,'','Debridement add-on '+a+' billed without base code '+E.DEBRIDE_ADDON[a],'Bill the base debridement code.'); }); };
+C.surg_multiple_51=(r,c,add)=>{ const surg=c.lines.filter(l=>num(l.cpt)>=10021&&num(l.cpt)<=69990&&!E.ADDON_CODES.includes(l.cpt));
+  if(surg.length>1&&!surg.some(l=>l.mods.includes('51')))
+    add(r,c,'',surg.length+' surgical procedures billed and none carries modifier 51','Some payers require modifier 51 on the lesser procedures. Others append it themselves.'); };
+C.cosurgeon_62=(r,c,add)=>{ if(c.lines.some(l=>l.mods.includes('62')))
+  add(r,c,'','Co-surgeon modifier 62 is present','Both surgeons must report the same procedure code with modifier 62 and each must document their part.'); };
+C.awv_em=(r,c,add)=>{ const k=codesOf(c);
+  if((k.includes('G0438')||k.includes('G0439'))&&c.lines.some(l=>E.OFFICE_EM.includes(l.cpt)&&!l.mods.includes('25')))
+    add(r,c,'','Annual wellness visit billed with a problem E/M lacking modifier 25','Append modifier 25 to the separately identifiable E/M.'); };
+C.venipuncture_units=(r,c,add)=>{ const v=c.lines.filter(l=>E.VENIPUNCTURE.includes(l.cpt));
+  const total=v.reduce((a,l)=>a+(l.units||0),0);
+  if(total>1) add(r,c,'','Venipuncture billed with '+total+' total units on this claim','Routine venipuncture is generally once per encounter.'); };
+C.lab_repeat_91=(r,c,add)=>{ const seen={};
+  c.lines.forEach(l=>{ const n=num(l.cpt); if(n<80047||n>89398) return;
+    const k=l.cpt+'~'+(l.dos||'');
+    if(seen[k]&&!l.mods.includes('91')) add(r,c,l.lx,'Laboratory code '+l.cpt+' repeated on '+(l.dos||'the same date')+' without modifier 91','Append modifier 91 for a medically necessary repeat test.');
+    seen[k]=1; }); };
+C.ambulance_base=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.AMB_MILEAGE.includes(x))&&!k.some(x=>E.AMB_BASE.includes(x)))
+    add(r,c,'','Ambulance mileage billed with no base transport code','Bill the base transport with the mileage.'); };
+C.ambulance_pickup=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.AMB_BASE.includes(x))&&!c.facility.addr&&!c.facility.npi)
+    add(r,c,'','Ambulance transport billed with no pickup location reported','Report the pickup location in the service facility loop.'); };
+C.ambulance_pos=(r,c,add)=>{ const k=codesOf(c);
+  if(c.type!=='I'&&k.some(x=>E.AMB_BASE.includes(x))&&c.pos&&!['41','42'].includes(c.pos))
+    add(r,c,'','Ambulance transport billed with place of service '+c.pos,'Ambulance services use place of service 41 (land) or 42 (air or water).'); };
+/* institutional */
+const tob=c=>((c.facilityType||'')+(c.freq||''));
+C.or_procedure=(r,c,add)=>{ if(c.type!=='I') return;
+  if(c.lines.some(l=>E.REV_OR(l.rev||''))&&!c.lines.some(l=>num(l.cpt)>=10021&&num(l.cpt)<=69990))
+    add(r,c,'','Operating room revenue code billed with no surgical procedure code','Report the surgical CPT/HCPCS performed.'); };
+C.rb_units=(r,c,add)=>{ if(c.type!=='I') return;
+  const a=c.dates.admission,d=c.dates.discharge; if(!a||!d) return;
+  const los=daysApart(a,d); if(los==null) return;
+  const rb=c.lines.filter(l=>E.REV_ROOM_BOARD(l.rev||''));
+  const u=rb.reduce((x,l)=>x+(l.units||0),0);
+  if(rb.length&&u!==los) add(r,c,'','Room and board units total '+u+' but the length of stay is '+los+' days','Room and board units should equal the covered days.'); };
+C.inpatient_admit=(r,c,add)=>{ if(c.type!=='I') return;
+  if(/^11/.test(tob(c))&&!c.dates.admission) add(r,c,'','Inpatient bill type '+tob(c)+' with no admission date','Report the admission date.'); };
+C.discharge_status=(r,c,add)=>{ if(c.type!=='I') return;
+  if(/^11/.test(tob(c))&&!c.dischargeStatus) add(r,c,'','Inpatient claim with no patient discharge status','Report the discharge status in CL103.'); };
+C.drg_missing=(r,c,add)=>{ if(c.type!=='I') return;
+  if(/^11/.test(tob(c))&&!c.drg) add(r,c,'','Inpatient claim with no DRG reported','Report the DRG.'); };
+C.outpatient_drg=(r,c,add)=>{ if(c.type!=='I') return;
+  if(c.drg&&!/^11/.test(tob(c))) add(r,c,'','DRG reported on outpatient bill type '+tob(c),'DRGs apply to inpatient claims.'); };
+C.stmt_required=(r,c,add)=>{ if(c.type!=='I') return;
+  if(!c.dates.stmtFrom) add(r,c,'','Institutional claim with no statement covers period','Report the statement from and through dates.'); };
+C.attending_required=(r,c,add)=>{ if(c.type!=='I') return;
+  if(!c.attending||!c.attending.npi) add(r,c,'','Institutional claim with no attending provider','Report the attending provider loop.'); };
+C.billtype_format=(r,c,add)=>{ if(c.type!=='I') return;
+  const t=tob(c); if(!/^\d{3}$/.test(t)) add(r,c,'','Type of bill "'+t+'" is not a valid 3-character value','Report the facility type, bill classification and frequency.'); };
+C.occurrence_span=(r,c,add)=>{ c.occurrenceSpan.forEach(o=>{ if(!o.date) add(r,c,'','Occurrence span code '+o.code+' reported without dates','Report the span dates.'); }); };
+C.value_code_amt=(r,c,add)=>{ c.valueCodes.forEach(v=>{ if(v.amt===''||v.amt==null) add(r,c,'','Value code '+v.code+' reported without an amount','Report the value amount.'); }); };
+C.condition_code=(r,c,add)=>{ c.conditionCodes.forEach(cc=>{ if(!/^[A-Z0-9]{2}$/.test(cc)) add(r,c,'','Condition code "'+cc+'" is not a 2-character value','Correct the condition code.'); }); };
+C.noncovered_reason=(r,c,add)=>{ if(c.type!=='I') return;
+  if(c.amts['A8']&&!c.conditionCodes.length&&!c.occurrence.length)
+    add(r,c,'','Non-covered charges reported with no condition or occurrence code','Report the reason for the non-covered charges.'); };
+C.outpatient_icd_pcs=(r,c,add)=>{ if(c.type!=='I') return;
+  if(c.principalProc&&!/^11/.test(tob(c))) add(r,c,'','Principal procedure code reported on outpatient bill type '+tob(c),'ICD-10-PCS procedures apply to inpatient claims.'); };
+C.admit_after_dos=(r,c,add)=>{ const a=c.dates.admission,s=firstDos(c);
+  if(a&&s&&d8d(a)&&d8d(s)&&d8d(a)>d8d(s)) add(r,c,'','Admission date '+a+' is after the date of service '+s,'Correct the admission date.'); };
+C.discharge_before_admit=(r,c,add)=>{ const a=c.dates.admission,d=c.dates.discharge;
+  if(a&&d&&d8d(a)&&d8d(d)&&d8d(d)<d8d(a)) add(r,c,'','Discharge date '+d+' precedes admission date '+a,'Correct the dates.'); };
+C.onset_required=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.CHIRO.includes(x)||(num(x)>=97161&&num(x)<=97168))&&!c.dates.onset)
+    add(r,c,'','Service requires an initial treatment or onset date and none is reported','Report the initial treatment date.'); };
+C.chiro_onset=(r,c,add)=>{ if(codesOf(c).some(x=>E.CHIRO.includes(x))&&!c.dates.onset)
+  add(r,c,'','Chiropractic manipulation billed with no initial treatment date','Report the initial treatment date.'); };
+C.auth_format=(r,c,add)=>{ const a=c.refs['G1'];
+  if(a&&!/^[A-Za-z0-9-]{4,30}$/.test(a)) add(r,c,'','Authorization number "'+a+'" is not in a plausible format','Verify the authorization number.'); };
+C.screening_dx=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.SCREENING_COLON.includes(x))&&c.dxs.length&&!c.dxs.some(d=>d.code.startsWith('Z12')))
+    add(r,c,'','Screening colonoscopy billed without a screening diagnosis','Report the screening diagnosis, or bill the diagnostic procedure code.'); };
+C.vision_routine=(r,c,add)=>{ const k=codesOf(c);
+  if(k.some(x=>E.VISION_ROUTINE.includes(x))&&c.dxs.some(d=>!/^(Z01|H52)/.test(d.code)))
+    add(r,c,'','Routine eye examination billed alongside a medical diagnosis','Routine vision codes with a medical diagnosis often deny. Consider the medical E/M code.'); };
+
+/* ============ LINE-LEVEL ============ */
+const L={};
+const anes=c=>num(c)>=100&&num(c)<=1999;
+L.cpt_format=(r,c,l,add)=>{
+  /* Institutional revenue lines (room and board, for example) legitimately carry
+     no HCPCS. Rule I002 handles the revenue codes that do require one. */
+  if(c.type==='I'&&!l.cpt) return;
+  if(!isCode(l.cpt)) add(r,c,l.lx,'Procedure "'+l.cpt+'" is not a valid CPT or HCPCS format','Use 5 digits, or a letter followed by 4 digits.');
+};
+L.cpt_placeholder=(r,c,l,add)=>{ if(/^0{5}$/.test(l.cpt)||/^9{5}$/.test(l.cpt)) add(r,c,l.lx,'Procedure code "'+l.cpt+'" is a placeholder','Report the actual procedure code.'); };
+L.mod_format=(r,c,l,add)=>{ l.mods.forEach(m=>{ if(!RE.mod.test(m)) add(r,c,l.lx,'Modifier "'+m+'" is not two alphanumeric characters','Correct the modifier.'); }); };
+L.mod_count=(r,c,l,add)=>{ if(l.mods.length>r.p.max) add(r,c,l.lx,l.mods.length+' modifiers present; '+r.p.max+' is the maximum','Keep the most significant modifiers.'); };
+L.mod_pair=(r,c,l,add)=>{ if(l.mods.includes(r.p.a)&&l.mods.includes(r.p.b)) add(r,c,l.lx,r.p.msg,'Remove one of the conflicting modifiers.'); };
+L.mod_units=(r,c,l,add)=>{ if(l.mods.includes(r.p.mod)&&l.units>r.p.max) add(r,c,l.lx,'Modifier '+r.p.mod+' billed with '+l.units+' units','Bill modifier '+r.p.mod+' with '+r.p.max+' unit.'); };
+L.mod_at_most_one=(r,c,l,add)=>{ const hit=l.mods.filter(m=>r.p.set.includes(m));
+  if(hit.length>1) add(r,c,l.lx,'Multiple '+r.p.label+' modifiers present: '+hit.join(', '),'Report only one.'); };
+L.mod_requires_any=(r,c,l,add)=>{ if(l.mods.includes(r.p.mod)&&!r.p.any.some(m=>l.mods.includes(m)))
+  add(r,c,l.lx,'Modifier '+r.p.mod+' requires one of: '+r.p.any.join(', '),'Append the required companion modifier.'); };
+L.mod_advisory=(r,c,l,add)=>{ if(l.mods.includes(r.p.mod)) add(r,c,l.lx,'Modifier '+r.p.mod+' present on '+l.cpt,r.p.msg); };
+L.mod_advisory_warn=L.mod_advisory;
+L.mod59_no_conflict=(r,c,l,add)=>{ const x=l.mods.find(m=>E.X_MODS.includes(m)); if(!x) return;
+  const k=codesOf(c); let conflict=false;
+  Object.keys(E.PANELS).forEach(p=>{ if(k.includes(p)&&E.PANELS[p].includes(l.cpt)) conflict=true; });
+  if(c.__ptp) k.forEach(o=>{ if(o!==l.cpt&&c.__ptp[o+'|'+l.cpt]) conflict=true; });
+  if(!conflict) add(r,c,l.lx,'Modifier '+x+' used with no conflict detected on this claim','Distinct procedural service modifiers invite audits. Confirm it is warranted.'); };
+L.mod51_addon=(r,c,l,add)=>{ if(E.ADDON_CODES.includes(l.cpt)&&l.mods.includes('51'))
+  add(r,c,l.lx,'Modifier 51 applied to add-on code '+l.cpt,'Add-on codes are exempt from the multiple procedure reduction.'); };
+L.mod52_charge=(r,c,l,add)=>{ if(l.mods.includes('52')) add(r,c,l.lx,'Modifier 52 indicates a reduced service on '+l.cpt,'Reduce the charge to reflect the reduced service.'); };
+L.mod47_anesthesia=(r,c,l,add)=>{ if(l.mods.includes('47')&&anes(l.cpt))
+  add(r,c,l.lx,'Modifier 47 applied to anesthesia code '+l.cpt,'Modifier 47 goes on the surgical procedure, never on an anesthesia code.'); };
+L.mod_set_context=(r,c,l,add)=>{ const ctx=E.MOD_CONTEXT[r.p.label]; if(!ctx) return;
+  const hit=l.mods.filter(m=>ctx.mods.includes(m));
+  if(hit.length&&isCode(l.cpt)&&!ctx.test(l.cpt))
+    add(r,c,l.lx,r.p.label+' modifier '+hit.join(', ')+' used on '+l.cpt,'This anatomic modifier is expected on a '+r.p.label+' procedure.'); };
+L.units_pos=(r,c,l,add)=>{ if(!(l.units>0)) add(r,c,l.lx,'Units are '+l.units,'Units must be greater than zero.'); };
+L.charge_pos=(r,c,l,add)=>{ if(!(l.charge>0)) add(r,c,l.lx,'Line charge is '+l.charge,'Charge must be greater than zero.'); };
+L.dup_line=(r,c,l,add)=>{ c.__sig=c.__sig||{};
+  const k=[l.cpt,l.mods.join(''),l.dos,l.units].join('~');
+  if(c.__sig[k]) add(r,c,l.lx,'Duplicate of line '+c.__sig[k]+' (same code, modifiers, date and units)','Combine the units or add a distinguishing modifier.');
+  else c.__sig[k]=l.lx; };
+L.dx_pointer=(r,c,l,add)=>{ (l.dxPtr||[]).forEach(p=>{ if(p>c.dxs.length)
+  add(r,c,l.lx,'Diagnosis pointer '+p+' exceeds the '+c.dxs.length+' diagnoses present','Repoint the line.'); }); };
+L.dx_no_pointer=(r,c,l,add)=>{ if(c.type==='I') return;
+  if(!l.dxPtr||!l.dxPtr.length) add(r,c,l.lx,'No diagnosis pointer on this line','Point the line to at least one diagnosis.'); };
+L.dx_ptr_count=(r,c,l,add)=>{ if((l.dxPtr||[]).length>r.p.max) add(r,c,l.lx,(l.dxPtr||[]).length+' diagnosis pointers; '+r.p.max+' is the maximum','Keep the four most relevant.'); };
+L.units_max=(r,c,l,add)=>{ const set=r.p.set==='EM'?E.EM_ALL:[];
+  if(set.includes(l.cpt)&&l.units>r.p.max) add(r,c,l.lx,'E/M code '+l.cpt+' billed with '+l.units+' units','Evaluation and management is once per encounter.'); };
+L.em_needs_25=(r,c,l,add)=>{ if(!E.EM_ALL.includes(l.cpt)) return;
+  const proc=c.lines.some(x=>isCode(x.cpt)&&!E.EM_ALL.includes(x.cpt));
+  if(proc&&!l.mods.includes('25')) add(r,c,l.lx,'E/M '+l.cpt+' billed alongside a procedure without modifier 25','Append modifier 25 if the E/M was separately identifiable.'); };
+L.em_pos=(r,c,l,add)=>{ const set=E.EM_SETS[r.p.set]||[]; const pos=l.posLine||c.pos;
+  if(set.includes(l.cpt)&&r.p.bad.includes(pos)) add(r,c,l.lx,l.cpt+' billed with place of service '+pos,'Use the E/M family that matches the setting.'); };
+L.pos_needs_mod=(r,c,l,add)=>{ const pos=l.posLine||c.pos;
+  if(r.p.pos.includes(pos)&&!r.p.any.some(m=>l.mods.includes(m)))
+    add(r,c,l.lx,'Place of service '+pos+' is telehealth but no approved modifier is present','Append 95 for audio-video, or 93 for audio only.'); };
+L.mod_needs_pos=(r,c,l,add)=>{ const pos=l.posLine||c.pos;
+  if(l.mods.some(m=>r.p.mods.includes(m))&&!r.p.pos.includes(pos))
+    add(r,c,l.lx,'Telehealth modifier used with place of service '+pos,'Use place of service 02 or 10, or remove the modifier.'); };
+L.pos_line_conflict=(r,c,l,add)=>{ if(l.posLine&&c.pos&&l.posLine!==c.pos&&!E.VALID_POS.includes(l.posLine))
+  add(r,c,l.lx,'Line place of service "'+l.posLine+'" is not a valid code','Correct the line level place of service.'); };
+L.addon=(r,c,l,add)=>{ if(!E.ADDONS[l.cpt]) return;
+  const k=codesOf(c);
+  if(!E.ADDONS[l.cpt].some(p=>k.some(x=>x!==l.cpt&&x.startsWith(p))))
+    add(r,c,l.lx,'Add-on code '+l.cpt+' has no primary procedure on this claim','Bill the primary procedure, or remove the add-on.'); };
+L.panel=(r,c,l,add)=>{ const k=codesOf(c);
+  Object.keys(E.PANELS).forEach(p=>{ if(k.includes(p)&&E.PANELS[p].includes(l.cpt))
+    add(r,c,l.lx,'Component '+l.cpt+' billed with panel '+p,'The component is included in the panel. Bill the panel alone.'); }); };
+L.ptp=(r,c,l,add)=>{ if(!c.__ptp) return; const k=codesOf(c);
+  k.forEach(o=>{ if(o===l.cpt) return; const hit=c.__ptp[o+'|'+l.cpt]; if(!hit) return;
+    const hasX=l.mods.some(m=>E.X_MODS.includes(m));
+    if(hit==='0') add(r,c,l.lx,l.cpt+' is bundled into '+o+' and no modifier can override it','Bill '+o+' alone.');
+    else if(!hasX) add(r,c,l.lx,l.cpt+' conflicts with '+o+' under NCCI','Append 59 or an X modifier if the services were distinct.'); }); };
+L.mue=(r,c,l,add)=>{ if(!c.__mue) return; const m=c.__mue[l.cpt];
+  if(m!=null&&l.units>m) add(r,c,l.lx,l.units+' units of '+l.cpt+' exceeds the MUE of '+m,'Reduce units, or split with documentation and a modifier.'); };
+L.cpt_gender=(r,c,l,add)=>{ const g=c.subscriber.gender;
+  if(g==='M'&&E.FEMALE_CPT.includes(l.cpt)) add(r,c,l.lx,'Procedure '+l.cpt+' is female-specific but the patient is male','Verify the code or the gender.');
+  if(g==='F'&&E.MALE_CPT.includes(l.cpt)) add(r,c,l.lx,'Procedure '+l.cpt+' is male-specific but the patient is female','Verify the code or the gender.'); };
+L.age_band=(r,c,l,add)=>{ const b=E.PREV_NEW[l.cpt]||E.PREV_EST[l.cpt]; if(!b||!c.subscriber.dob||!l.dos) return;
+  const a=ageAt(c.subscriber.dob,l.dos);
+  if(a!==null&&(a<b[0]||a>b[1])) add(r,c,l.lx,'Preventive code '+l.cpt+' covers ages '+b[0]+' to '+(b[1]===200?'older':b[1])+' but the patient is '+a,'Select the preventive code for the correct age band.'); };
+function newbornCheck(r,c,l,add){ if(!E.NEWBORN.includes(l.cpt)||!c.subscriber.dob||!l.dos) return;
+  const d=daysApart(c.subscriber.dob,l.dos);
+  if(d!=null&&d>28) add(r,c,l.lx,'Newborn care code '+l.cpt+' billed for a patient '+d+' days old','Newborn codes apply within the first 28 days.'); }
+L.newborn_age=newbornCheck; L.newborn_age2=newbornCheck;
+L.neonatal_age=(r,c,l,add)=>{ if(!E.NEONATAL_CC.includes(l.cpt)||!c.subscriber.dob||!l.dos) return;
+  const a=ageAt(c.subscriber.dob,l.dos);
+  if(a!==null&&a>2) add(r,c,l.lx,'Neonatal critical care code '+l.cpt+' billed for a patient aged '+a,'These codes apply to neonates and young infants.'); };
+L.unlisted=(r,c,l,add)=>{ if(E.UNLISTED.includes(l.cpt)) add(r,c,l.lx,'Unlisted procedure code '+l.cpt,'Attach a description of the service and supporting documentation.'); };
+L.colon_pt=(r,c,l,add)=>{ if(!E.DIAG_COLON.includes(l.cpt)) return;
+  if(c.dxs.some(d=>d.code.startsWith('Z12'))&&!l.mods.includes('PT'))
+    add(r,c,l.lx,'Screening colonoscopy converted to diagnostic without modifier PT','Append PT so the patient keeps the screening benefit.'); };
+L.virtual_em_pos=(r,c,l,add)=>{ const v=['99421','99422','99423','99441','99442','99443'];
+  const pos=l.posLine||c.pos;
+  if(v.includes(l.cpt)&&['11','21','22'].includes(pos))
+    add(r,c,l.lx,'Digital or telephone E/M '+l.cpt+' billed with in-person place of service '+pos,'Use the telehealth place of service.'); };
+L.ndc_required=(r,c,l,add)=>{ if(/^J\d{4}$/.test(l.cpt)&&!l.ndc) add(r,c,l.lx,'Drug code '+l.cpt+' has no NDC','Add the LIN segment with the 11-digit NDC.'); };
+L.ndc_format=(r,c,l,add)=>{ if(l.ndc&&!RE.ndc11.test(l.ndc)) add(r,c,l.lx,'NDC "'+l.ndc+'" is not 11 digits','Convert to the 11-digit 5-4-2 format.'); };
+L.ndc_qty=(r,c,l,add)=>{ if(l.ndc&&!(l.ndcQty>0)) add(r,c,l.lx,'NDC reported with no quantity','Report the NDC quantity in the CTP segment.'); };
+L.ndc_unit=(r,c,l,add)=>{ const ok=['F2','GR','ME','ML','UN'];
+  if(l.ndc&&l.ndcUnit&&!ok.includes(l.ndcUnit)) add(r,c,l.lx,'NDC unit "'+l.ndcUnit+'" is not a valid unit of measure','Use F2, GR, ME, ML or UN.'); };
+L.jw_jz=(r,c,l,add)=>{ if(/^J\d{4}$/.test(l.cpt)&&!l.mods.includes('JW')&&!l.mods.includes('JZ'))
+  add(r,c,l.lx,'Drug '+l.cpt+' billed without JW or JZ','Medicare requires JZ when there is no wastage and JW when there is.'); };
+L.jw_qty=(r,c,l,add)=>{ if(l.mods.includes('JW')&&!(l.units>0))
+  add(r,c,l.lx,'Modifier JW billed with no wasted units','Report the discarded amount as units on the JW line.'); };
+L.unclassified_drug=(r,c,l,add)=>{ if(['J3490','J3590','J9999','J8499','J7999'].includes(l.cpt))
+  add(r,c,l.lx,'Unclassified drug code '+l.cpt,'Report the drug name, strength and dosage in the narrative, and include the NDC.'); };
+L.compound_ndc=(r,c,l,add)=>{ if(l.cpt==='J7999'&&!l.ndc) add(r,c,l.lx,'Compound drug billed without NDC detail','Report each component NDC.'); };
+L.clia_required=(r,c,l,add)=>{ const n=num(l.cpt);
+  if(n>=80047&&n<=89398&&!c.refs['X4']) add(r,c,l.lx,'Laboratory code '+l.cpt+' with no CLIA number on the claim','Add REF*X4 with the CLIA certificate number.'); };
+L.clia_format=(r,c,l,add)=>{ const v=c.refs['X4']; if(v&&v.length!==10) add(r,c,l.lx,'CLIA number "'+v+'" is not 10 characters','Correct the CLIA certificate number.'); };
+L.lab_reference=(r,c,l,add)=>{ if(l.mods.includes('90')) add(r,c,l.lx,'Modifier 90 present on '+l.cpt,'The reference laboratory performed the test. Report their information when required.'); };
+L.dos_format=(r,c,l,add)=>{ if(l.dos&&!d8d(l.dos)) add(r,c,l.lx,'Service date "'+l.dos+'" is not a valid CCYYMMDD date','Correct the service date.'); };
+L.dos_future=(r,c,l,add)=>{ if(l.dos&&d8d(l.dos)&&d8d(l.dos).getTime()>Date.now()) add(r,c,l.lx,'Service date '+l.dos+' is in the future','Correct the date of service.'); };
+L.dos_before_dob=(r,c,l,add)=>{ const b=c.subscriber.dob;
+  if(l.dos&&b&&d8d(l.dos)&&d8d(b)&&d8d(l.dos)<d8d(b)) add(r,c,l.lx,'Service date '+l.dos+' precedes the date of birth '+b,'Correct the dates.'); };
+L.dos_outside_stmt=(r,c,l,add)=>{ const f=c.dates.stmtFrom,t=c.dates.stmtTo;
+  if(l.dos&&f&&t&&d8d(l.dos)&&d8d(f)&&d8d(t)&&(d8d(l.dos)<d8d(f)||d8d(l.dos)>d8d(t)))
+    add(r,c,l.lx,'Line date '+l.dos+' falls outside the statement period '+f+' to '+t,'Correct the line or statement dates.'); };
+L.charge_per_unit=(r,c,l,add)=>{ if(l.units>0&&l.charge>0){ const per=l.charge/l.units;
+  if(per>100000) add(r,c,l.lx,'Charge per unit is '+per.toFixed(2),'Verify the charge and units.'); } };
+L.auth_required=(r,c,l,add)=>{ if(E.AUTH_CPT.includes(l.cpt)&&!c.refs['G1'])
+  add(r,c,l.lx,'Procedure '+l.cpt+' commonly requires prior authorization and none is reported','Add the authorization number, or verify none is required.'); };
+L.medicare_ordering=(r,c,l,add)=>{ if(isMedicare(c)&&E.NEEDS_ORDERING.test(l.cpt)&&!c.referring.npi)
+  add(r,c,l.lx,'Service '+l.cpt+' typically requires an ordering or referring provider','Report the referring provider loop.'); };
+L.diag_ordering=(r,c,l,add)=>{ const n=num(l.cpt);
+  if(n>=70010&&n<=79999&&!c.referring.npi) add(r,c,l.lx,'Diagnostic imaging '+l.cpt+' billed without an ordering provider','Report the ordering provider.'); };
+L.anesthesia_pstatus=(r,c,l,add)=>{ if(anes(l.cpt)&&!l.mods.some(m=>E.PHYS_STATUS.includes(m)))
+  add(r,c,l.lx,'Anesthesia code '+l.cpt+' has no physical status modifier','Append P1 through P6.'); };
+L.anesthesia_direction=(r,c,l,add)=>{ if(anes(l.cpt)&&!l.mods.some(m=>E.ANES_DIRECTION.includes(m)))
+  add(r,c,l.lx,'Anesthesia code '+l.cpt+' has no medical direction modifier','Append AA, AD, QK, QX, QY or QZ.'); };
+L.anesthesia_time=(r,c,l,add)=>{ if(anes(l.cpt)&&!(l.units>0)) add(r,c,l.lx,'Anesthesia code '+l.cpt+' reports no time units','Report anesthesia time.'); };
+L.anesthesia_units_sanity=(r,c,l,add)=>{ if(anes(l.cpt)&&l.units>500)
+  add(r,c,l.lx,'Anesthesia code '+l.cpt+' reports '+l.units+' units','Check whether minutes were reported where units were expected.'); };
+L.anesthesia_qualifying=(r,c,l,add)=>{ const q=['99100','99116','99135','99140'];
+  if(q.includes(l.cpt)&&!c.lines.some(x=>anes(x.cpt)))
+    add(r,c,l.lx,'Qualifying circumstances code '+l.cpt+' billed without an anesthesia code','These codes are add-ons to an anesthesia service.'); };
+L.ambulance_od=(r,c,l,add)=>{ if(!E.AMB_BASE.includes(l.cpt)&&!E.AMB_MILEAGE.includes(l.cpt)) return;
+  const od=l.mods.find(m=>m.length===2&&E.AMB_OD_CHARS.includes(m[0])&&E.AMB_OD_CHARS.includes(m[1]));
+  if(!od) add(r,c,l.lx,'Ambulance code '+l.cpt+' has no origin and destination modifier','Append a two-character origin and destination modifier.'); };
+L.ambulance_od_chars=(r,c,l,add)=>{ if(!E.AMB_BASE.includes(l.cpt)&&!E.AMB_MILEAGE.includes(l.cpt)) return;
+  l.mods.forEach(m=>{ if(m.length===2&&/^[A-Z]{2}$/.test(m)&&(E.AMB_OD_CHARS.includes(m[0])!==E.AMB_OD_CHARS.includes(m[1])))
+    add(r,c,l.lx,'Ambulance modifier "'+m+'" has an invalid origin or destination character','Valid characters are D, E, G, H, I, J, N, P, R, S and X.'); }); };
+L.ambulance_mileage=(r,c,l,add)=>{ if(E.AMB_MILEAGE.includes(l.cpt)&&!(l.units>0))
+  add(r,c,l.lx,'Ambulance mileage '+l.cpt+' billed with zero units','Report the loaded mileage.'); };
+L.dme_rr_nu_ue=(r,c,l,add)=>{ if(/^[EKL]\d{4}$/.test(l.cpt)&&!l.mods.some(m=>E.DME_ACQ.includes(m)))
+  add(r,c,l.lx,'DME code '+l.cpt+' billed without RR, NU or UE','Report whether the item is rented, new or used.'); };
+L.dme_laterality=(r,c,l,add)=>{ if(/^[EKL]\d{4}$/.test(l.cpt)&&!l.mods.includes('RT')&&!l.mods.includes('LT')&&!l.mods.includes('50'))
+  add(r,c,l.lx,'DME code '+l.cpt+' billed without a laterality modifier','Many DME items require RT or LT.'); };
+L.therapy_discipline=(r,c,l,add)=>{ const n=num(l.cpt);
+  const isTherapy=(n>=97010&&n<=97799)||['92507','92508','92521','92522','92523','92524'].includes(l.cpt);
+  if(isTherapy&&!l.mods.some(m=>E.THERAPY_DISC.includes(m)))
+    add(r,c,l.lx,'Therapy code '+l.cpt+' billed without GP, GO or GN','Report the therapy discipline.'); };
+L.therapy_assistant=(r,c,l,add)=>{ if((l.mods.includes('CQ')||l.mods.includes('CO'))&&!l.mods.some(m=>E.THERAPY_DISC.includes(m)))
+  add(r,c,l.lx,'Therapy assistant modifier without a discipline modifier','Append GP or GO alongside CQ or CO.'); };
+L.therapy_units=(r,c,l,add)=>{ if(E.THERAPY_TIMED.includes(l.cpt)&&l.units>8)
+  add(r,c,l.lx,'Timed therapy code '+l.cpt+' billed with '+l.units+' units','Verify the units against the 8-minute rule.'); };
+L.psych_units=(r,c,l,add)=>{ if(E.PSYCH_TIMED.includes(l.cpt)&&l.units>1)
+  add(r,c,l.lx,'Psychotherapy code '+l.cpt+' billed with '+l.units+' units','These codes represent a single timed session.'); };
+L.rad_contrast=(r,c,l,add)=>{ if(!E.CONTRAST_AGENTS.includes(l.cpt)) return;
+  if(!c.lines.some(x=>/^7\d{4}$/.test(x.cpt))) add(r,c,l.lx,'Contrast agent '+l.cpt+' billed with no radiology procedure','Report the imaging study performed.'); };
+L.assistant_verify=(r,c,l,add)=>{ const m=l.mods.find(x=>['80','81','82','AS'].includes(x)); if(!m) return;
+  add(r,c,l.lx,'Assistant at surgery modifier '+m+' on '+l.cpt,'Verify the assistant-at-surgery indicator on the physician fee schedule before billing.'); };
+L.ob_delivery=(r,c,l,add)=>{ if(!E.OB_DELIVERY.includes(l.cpt)) return;
+  add(r,c,l.lx,'Delivery-only code '+l.cpt+' billed','Confirm antepartum and postpartum care are billed separately or by another provider.'); };
+L.chiro_at=(r,c,l,add)=>{ if(E.CHIRO.includes(l.cpt)&&!l.mods.includes('AT'))
+  add(r,c,l.lx,'Chiropractic code '+l.cpt+' billed without modifier AT','Medicare covers only active or corrective treatment, identified by AT.'); };
+/* institutional line rules */
+L.rev_format=(r,c,l,add)=>{ if(c.type!=='I') return;
+  if(!l.rev||!RE.rev.test(l.rev)) add(r,c,l.lx,'Revenue code "'+(l.rev||'')+'" is not a 4-digit value','Report the revenue code with its leading zero.'); };
+L.rev_needs_hcpcs=(r,c,l,add)=>{ if(c.type!=='I') return;
+  if(E.REV_NEEDS_HCPCS.includes(l.rev)&&!l.cpt) add(r,c,l.lx,'Revenue code '+l.rev+' requires a HCPCS code','Report the HCPCS code for this revenue line.'); };
+L.rev_needs_ndc=(r,c,l,add)=>{ if(c.type!=='I') return;
+  if(E.REV_DRUG.includes(l.rev)&&!l.ndc) add(r,c,l.lx,'Drug revenue code '+l.rev+' requires an NDC','Report the 11-digit NDC.'); };
+L.ed_hcpcs=(r,c,l,add)=>{ if(c.type!=='I') return;
+  if(/^045\d$/.test(l.rev||'')&&!l.cpt) add(r,c,l.lx,'Emergency department revenue code '+l.rev+' requires a HCPCS code','Report the emergency department visit level.'); };
+L.observation_units=(r,c,l,add)=>{ if(c.type!=='I') return;
+  if(l.rev==='0762'&&!(l.units>0)) add(r,c,l.lx,'Observation revenue code billed with no hourly units','Report the observation hours.'); };
+
+/* ============ runner ============ */
+function runFile(raw,fileName,opts){
+  opts=opts||{};
+  const rules=opts.rules;
+  const {F,add}=mk(opts);
+  const {segs,comp}=E.parseX12(raw);
+  const st=E.stType(segs);
+  const on=r=>!r.req||(r.req==='ptp'&&opts.ptp)||(r.req==='mue'&&opts.mue);
+  if(st==='835') return {type:'835',remit:E.parse835(segs),findings:F};
+  if(st!=='837') return {type:st||'unknown',findings:F};
+
+  const stub={claimId:'(file)',__file:fileName};
+  rules.forEach(r=>{ if(!on(r)) return; const fn=FILE_CHECKS[r.t]; if(fn) fn(r,segs,stub,add); });
+
+  const claims=E.parse837(segs,comp);
+  claims.forEach(c=>{
+    c.__file=fileName; c.__ptp=opts.ptp; c.__mue=opts.mue;
+    rules.forEach(r=>{ if(!on(r)) return; const fn=C[r.t]; if(fn) fn(r,c,add); });
+    c.lines.forEach(l=>{ rules.forEach(r=>{ if(!on(r)) return; const fn=L[r.t]; if(fn) fn(r,c,l,add); }); });
+  });
+  return {type:'837',claims,findings:F};
+}
+
+/* ================= UI ================= */
+const $=id=>document.getElementById(id);
+const RULES=JSON.parse($('rulesData').textContent);
+const ENABLED={}; RULES.forEach(r=>ENABLED[r.id]=true);
+const CMS={ptp:null,mue:null};
+const S={files:0,claims:0,lines:0,findings:[],denials:null,claimIds:new Set(),errClaims:new Set()};
+const REQ_LABEL={
+  ptp:'Inactive until the CMS NCCI PTP file is loaded',
+  mue:'Inactive until the CMS MUE file is loaded',
+  mpfs:'Inactive: needs the CMS physician fee schedule indicators',
+  ref:'Inactive: needs a CMS or AMA reference code list',
+  history:'Inactive: needs claim history beyond a single file'
+};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function log(m,cls){const d=document.createElement('div');if(cls)d.className=cls;d.textContent=m;$('log').appendChild(d);$('log').scrollTop=1e6;}
+function readFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Could not read '+f.name));r.readAsText(f);});}
+
+async function handleFiles(list){
+  const files=[...list]; if(!files.length) return;
+  for(const file of files){
+    try{
+      const raw=await readFile(file);
+      const res=runFile(raw,file.name,{rules:RULES,enabled:ENABLED,ptp:CMS.ptp,mue:CMS.mue});
+      if(res.type==='837'){
+        S.files++; S.claims+=res.claims.length;
+        S.lines+=res.claims.reduce((a,c)=>a+c.lines.length,0);
+        res.claims.forEach(c=>S.claimIds.add(file.name+'|'+c.claimId));
+        res.findings.filter(f=>f.sev==='error'&&f.claim&&f.claim!=='(file)').forEach(f=>S.errClaims.add(file.name+'|'+f.claim));
+        S.findings=S.findings.concat(res.findings);
+        const t=res.claims.length&&res.claims[0].type==='I'?'institutional':'professional';
+        log('Parsed '+file.name+' ('+t+'): '+res.claims.length+' claims, '+res.claims.reduce((a,c)=>a+c.lines.length,0)+' lines','ok');
+      } else if(res.type==='835'){
+        const r=res.remit;
+        S.denials=S.denials||{payer:r.payer,carc:{},claims:0};
+        S.denials.claims+=r.claims;
+        Object.keys(r.carc).forEach(k=>{
+          if(!S.denials.carc[k]) S.denials.carc[k]={...r.carc[k]};
+          else{S.denials.carc[k].count+=r.carc[k].count;S.denials.carc[k].amt+=r.carc[k].amt;}
+        });
+        S.files++; log('Parsed 835 '+file.name+': '+r.claims+' claims','ok');
+      } else log('Skipped '+file.name+': transaction set '+(res.type||'unknown')+' is not 837 or 835','err');
+    }catch(e){ log('Error in '+file.name+': '+e.message,'err'); }
+  }
+  render();
+}
+
+/* CMS loaders */
+function parseCSV(text){
+  const rows=[];let cur=[],val='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){val+='"';i++;} else q=false; } else val+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===','){cur.push(val);val='';}
+    else if(ch==='\n'){cur.push(val);rows.push(cur);cur=[];val='';}
+    else if(ch!=='\r') val+=ch;
+  }
+  if(val||cur.length){cur.push(val);rows.push(cur);}
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
+function findHeader(rows,needles){
+  for(let i=0;i<Math.min(rows.length,15);i++){
+    const low=rows[i].map(x=>x.toLowerCase().trim());
+    if(needles.every(n=>low.some(c=>c.includes(n)))) return i;
+  }
+  return -1;
+}
+async function loadPTP(file){
+  try{
+    const rows=parseCSV(await readFile(file));
+    const h=findHeader(rows,['column 1','column 2']);
+    if(h<0){log('PTP file: could not find the Column 1 and Column 2 headers','err');return;}
+    const low=rows[h].map(x=>x.toLowerCase().trim());
+    const c1=low.findIndex(x=>x.includes('column 1')),c2=low.findIndex(x=>x.includes('column 2'));
+    let mi=low.findIndex(x=>x==='modifier'||x.includes('modifier indicator'));
+    if(mi<0) mi=low.findIndex(x=>x.includes('modifier'));
+    const map={};let n=0;
+    for(let i=h+1;i<rows.length;i++){
+      const a=(rows[i][c1]||'').trim(),b=(rows[i][c2]||'').trim();
+      if(!a||!b) continue;
+      map[a+'|'+b]=(mi>=0?(rows[i][mi]||'').trim():'1');n++;
+    }
+    CMS.ptp=map;log('Loaded '+n.toLocaleString()+' NCCI PTP pairs. Rule C007 is now active.','ok');cmsNote();renderRules();
+  }catch(e){log('PTP load failed: '+e.message,'err');}
+}
+async function loadMUE(file){
+  try{
+    const rows=parseCSV(await readFile(file));
+    const h=findHeader(rows,['hcpcs']);
+    if(h<0){log('MUE file: could not find an HCPCS header','err');return;}
+    const low=rows[h].map(x=>x.toLowerCase().trim());
+    const cc=low.findIndex(x=>x.includes('hcpcs'));
+    const vv=low.findIndex(x=>x.includes('mue value')||x.includes('mue values'));
+    if(vv<0){log('MUE file: could not find an MUE value column','err');return;}
+    const map={};let n=0;
+    for(let i=h+1;i<rows.length;i++){
+      const code=(rows[i][cc]||'').trim(),v=parseFloat(rows[i][vv]);
+      if(!code||isNaN(v)) continue; map[code]=v;n++;
+    }
+    CMS.mue=map;log('Loaded '+n.toLocaleString()+' MUE values. Rule C008 is now active.','ok');cmsNote();renderRules();
+  }catch(e){log('MUE load failed: '+e.message,'err');}
+}
+function cmsNote(){
+  const p=CMS.ptp?('NCCI PTP loaded ('+Object.keys(CMS.ptp).length.toLocaleString()+' pairs).'):'NCCI PTP not loaded.';
+  const m=CMS.mue?('MUE loaded ('+Object.keys(CMS.mue).length.toLocaleString()+' codes).'):'MUE not loaded.';
+  $('cmsNote').textContent=p+' '+m+' Download both from the CMS National Correct Coding Initiative page and load the CSV files here.';
+}
+
+/* render */
+function render(){
+  if(S.files) $('statsCard').classList.remove('hidden');
+  $('sFiles').textContent=S.files;$('sClaims').textContent=S.claims;$('sLines').textContent=S.lines;
+  $('sErr').textContent=S.findings.filter(f=>f.sev==='error').length;
+  $('sWarn').textContent=S.findings.filter(f=>f.sev==='warning').length;
+  $('sInfo').textContent=S.findings.filter(f=>f.sev==='info').length;
+  $('sClean').textContent=Math.max(0,S.claimIds.size-S.errClaims.size);
+  if(S.findings.length){
+    $('findCard').classList.remove('hidden');
+    const cats=[...new Set(S.findings.map(f=>f.cat))].sort();
+    const sel=$('fCat'),keep=sel.value;
+    sel.innerHTML='<option value="">All categories</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');
+    sel.value=keep; renderFindings();
+  }
+  if(S.denials){$('denialCard').classList.remove('hidden');renderDenials();}
+}
+function renderFindings(){
+  const sev=$('fSev').value,cat=$('fCat').value,q=$('fSearch').value.trim().toLowerCase();
+  const rank={error:0,warning:1,info:2};
+  const rows=S.findings.filter(f=>(!sev||f.sev===sev)&&(!cat||f.cat===cat)&&
+    (!q||[f.claim,f.rule,f.msg,f.name,f.cat].join(' ').toLowerCase().includes(q)))
+    .sort((a,b)=>rank[a.sev]-rank[b.sev]||String(a.claim).localeCompare(String(b.claim)));
+  $('fCount').textContent=rows.length+' of '+S.findings.length+' findings'+(rows.length>600?' (showing first 600)':'');
+  $('findTable').innerHTML='<tr><th>Severity</th><th>Rule</th><th>Claim</th><th>Line</th><th>Category</th><th>What is wrong</th><th>How to fix it</th><th>Source</th></tr>'+
+    rows.slice(0,600).map(f=>'<tr><td><span class="pill '+f.sev+'">'+f.sev+'</span></td><td><code>'+esc(f.rule)+'</code></td>'+
+    '<td>'+esc(f.claim)+'</td><td class="num">'+esc(f.line)+'</td><td>'+esc(f.cat)+'</td><td>'+esc(f.msg)+'</td>'+
+    '<td>'+esc(f.fix)+'</td><td style="color:var(--muted)">'+esc(f.src)+'</td></tr>').join('');
+}
+function renderDenials(){
+  const rows=Object.values(S.denials.carc).sort((a,b)=>Math.abs(b.amt)-Math.abs(a.amt));
+  $('denialTable').innerHTML='<tr><th>Group</th><th>Reason</th><th>What it means</th><th class="num">Lines</th><th class="num">Amount</th><th>Prevented by</th></tr>'+
+    rows.map(r=>{const m=CARC[r.code]||['Reason code not in the summarized list','Review the payer remittance guide'];
+      return '<tr><td><code>'+esc(r.group)+'</code></td><td><code>'+esc(r.code)+'</code></td><td>'+esc(m[0])+'</td>'+
+        '<td class="num">'+r.count+'</td><td class="num">'+r.amt.toFixed(2)+'</td><td>'+esc(m[1])+'</td></tr>';}).join('');
+}
+function ruleActive(r){ if(!r.req) return true; if(r.req==='ptp') return !!CMS.ptp; if(r.req==='mue') return !!CMS.mue; return false; }
+function renderRules(){
+  const q=($('rSearch').value||'').trim().toLowerCase();
+  const cat=$('rCat').value;
+  const list=RULES.filter(r=>(!cat||r.cat===cat)&&(!q||[r.id,r.name,r.cat,r.src].join(' ').toLowerCase().includes(q)));
+  const act=RULES.filter(ruleActive).length;
+  $('ruleCount').textContent=RULES.length+' rules total, '+act+' active right now';
+  $('ruleList').innerHTML=list.map(r=>{
+    const on=ruleActive(r);
+    const badge=on?'':'<span class="pill off">inactive</span>';
+    const why=on?'':'<div class="rwhy">'+esc(REQ_LABEL[r.req]||'Inactive')+'</div>';
+    return '<div class="rr'+(on?'':' dim')+'"><input type="checkbox" data-rid="'+r.id+'"'+(ENABLED[r.id]?' checked':'')+(on?'':' disabled')+'>'+
+      '<div class="meta"><span class="rid">'+r.id+'</span> <span class="pill '+r.sev+'">'+r.sev+'</span> '+badge+
+      '<div class="rname">'+esc(r.name)+'</div><div class="rsrc">'+esc(r.cat)+' &middot; '+esc(r.src)+'</div>'+why+'</div></div>';
+  }).join('');
+  $('ruleList').querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{ENABLED[cb.getAttribute('data-rid')]=cb.checked;}));
+}
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
+function exportFindings(){
+  if(!S.findings.length) return;
+  const head=['File','Claim','Line','Severity','Rule','Rule name','Category','Finding','Suggested fix','Source'];
+  const rows=[head].concat(S.findings.map(f=>[f.file,f.claim,f.line,f.sev,f.rule,f.name,f.cat,f.msg,f.fix,f.src]));
+  const blob=new Blob(['\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download='FixYourRCM-Scrub-Findings.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+function exportRules(){
+  const head=['Rule ID','Category','Severity','Rule','Public source','Status'];
+  const rows=[head].concat(RULES.map(r=>[r.id,r.cat,r.sev,r.name,r.src,ruleActive(r)?'Active':(REQ_LABEL[r.req]||'Inactive')]));
+  const blob=new Blob(['\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download='FixYourRCM-Scrub-Rule-Library.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+function resetAll(){
+  S.files=0;S.claims=0;S.lines=0;S.findings=[];S.denials=null;S.claimIds=new Set();S.errClaims=new Set();
+  ['statsCard','findCard','denialCard'].forEach(i=>$(i).classList.add('hidden'));
+  $('log').innerHTML='';$('fSearch').value='';$('fSev').value='';$('fCat').value='';
+}
+
+const SAMPLE_P=["ISA*00*          *00*          *ZZ*SUB            *ZZ*REC            *260115*1200*^*00501*000000001*0*P*:",
+"GS*HC*S*R*20260115*1200*1*X*005010X222A1","ST*837*0001*005010X222A1","BHT*0019*00*R1*20260115*1200*CH",
+"HL*1**20*1","NM1*85*2*SUNRISE FAMILY MEDICINE*****XX*1234567890","N3*PO BOX 400","N4*AUSTIN*TX*78701",
+"REF*EI*12345","HL*2*1*22*0","SBR*S*01*******MC","NM1*IL*1*DOE*JANE****MI*123456789A","DMG*D8*19900101*F",
+"NM1*PR*2*MEDICARE*****PI*1","CLM*SAMPLE-P*500***02:B:1***Y*A*Y*Y","HI*ABK:V892*ABF:N40*ABF:N40",
+"LX*1","SV1*HC:99213:26:TC:50*100*UN*2***1","DTP*472*D8*20260110",
+"LX*2","SV1*HC:00810:47*100*UN*0***1","DTP*472*D8*20260110",
+"LX*3","SV1*HC:J1745*100*UN*1***1","DTP*472*D8*20260110",
+"LX*4","SV1*HC:A0425*100*UN*0***1","DTP*472*D8*20260110",
+"LX*5","SV1*HC:97110*100*UN*12***1","DTP*472*D8*20260110",
+"SE*30*0001","GE*1*1","IEA*1*000000001"].join("~")+"~";
+const SAMPLE_I=["ISA*00*          *00*          *ZZ*SUB            *ZZ*REC            *260115*1200*^*00501*000000001*0*P*:",
+"GS*HC*S*R*20260115*1200*1*X*005010X223A2","ST*837*0001*005010X223A2","BHT*0019*00*R1*20260115*1200*CH",
+"HL*1**20*1","NM1*85*2*GENERAL HOSPITAL*****XX*1234567893","N3*100 MAIN ST","N4*AUSTIN*TX*787011234",
+"PRV*BI*PXC*282N00000X","REF*EI*123456789","HL*2*1*22*0","SBR*P*18*******MB",
+"NM1*IL*1*ROE*RICH****MI*1EG4TE5MK73","DMG*D8*19550101*M","NM1*PR*2*MEDICARE*****PI*1",
+"CLM*SAMPLE-I*9000***11:A:1***N*A*Y*Y","DTP*434*RD8*20260101-20260105","DTP*435*D8*20260101","DTP*096*D8*20260105",
+"CL1*3*1*01","HI*ABK:I5021","NM1*71*1*SMITH*JOHN****XX*1234567893",
+"LX*1","SV2*0120*HC:*4000*DA*3","DTP*472*D8*20260101",
+"LX*2","SV2*0450**1000*UN*1","DTP*472*D8*20260101",
+"LX*3","SV2*0636*HC:J1745*4000*UN*1","DTP*472*D8*20260101",
+"SE*26*0001","GE*1*1","IEA*1*000000001"].join("~")+"~";
+function sample(txt,name){handleFiles([new File([new Blob([txt],{type:'text/plain'})],name,{type:'text/plain'})]);}
+
+const drop=$('drop');
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files)handleFiles(e.dataTransfer.files);});
+$('fileInput').addEventListener('change',e=>handleFiles(e.target.files));
+$('ptpInput').addEventListener('change',e=>{if(e.target.files[0])loadPTP(e.target.files[0]);});
+$('mueInput').addEventListener('change',e=>{if(e.target.files[0])loadMUE(e.target.files[0]);});
+$('sampleP').addEventListener('click',()=>sample(SAMPLE_P,'sample-837P.txt'));
+$('sampleI').addEventListener('click',()=>sample(SAMPLE_I,'sample-837I.txt'));
+$('fSev').addEventListener('change',renderFindings);
+$('fCat').addEventListener('change',renderFindings);
+$('fSearch').addEventListener('input',renderFindings);
+$('dlFindings').addEventListener('click',exportFindings);
+$('dlRules').addEventListener('click',exportRules);
+$('resetBtn').addEventListener('click',resetAll);
+$('allOn').addEventListener('click',()=>{RULES.forEach(r=>ENABLED[r.id]=true);renderRules();});
+$('allOff').addEventListener('click',()=>{RULES.forEach(r=>ENABLED[r.id]=false);renderRules();});
+$('rSearch').addEventListener('input',renderRules);
+$('rCat').addEventListener('change',renderRules);
+
+(function init(){
+  const cats=[...new Set(RULES.map(r=>r.cat))].sort();
+  $('rCat').innerHTML='<option value="">All categories</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');
+  renderRules(); cmsNote();
+})();
+
+</script>
+
+<div class="site-foot">(c) 2026 Merwin David &middot; All rights reserved &middot; Unauthorized copying prohibited</div>
+<script>
+(function(){
+  document.addEventListener('contextmenu',function(e){var t=(e.target&&e.target.tagName)||'';if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;e.preventDefault();},{capture:true});
+  document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase();
+    if(k==='f12'){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();return;}
+    if((e.ctrlKey||e.metaKey)&&(k==='u'||k==='s')){e.preventDefault();return;}
+  },{capture:true});
+})();
+</script>
+</body>
+</html>
